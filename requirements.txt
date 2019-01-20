@@ -1,0 +1,12 @@
+giphy_client
+google-api-python-client
+moviepy
+python_pixabay
+pafy
+youtube-dl
+git+https://github.com/nkelton/freesound-python.git
+requests
+google-api-python-client
+oauth2client
+progressbar2
+git+https://github.com/nkelton/youtube-upload.git
