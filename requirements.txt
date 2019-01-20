@@ -1,6 +1,6 @@
 giphy_client
 google-api-python-client
-moviepy
+git+https://github.com/nkelton/moviepy.git
 python_pixabay
 pafy
 youtube-dl

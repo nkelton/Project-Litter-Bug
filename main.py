@@ -9,7 +9,7 @@ if __name__ == '__main__':
             lb.upload_clip()
 
         except Exception as e:
-            print e
+            print(e)
             lb.exception_handler()
 
         lb.clean_up()
