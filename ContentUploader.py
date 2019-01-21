@@ -20,9 +20,13 @@ class ContentUploader(object):
         self.weight = None
 
     def upload_content(self):
+        print('Creating thumbnail...')
         self.create_thumbnail()
+        print('Getting weight...')
         self.get_weight()
+        print('Uploading...')
         self.upload()
+        print('Storing...')
         self.store()
 
     def create_thumbnail(self):
@@ -40,6 +44,13 @@ class ContentUploader(object):
         key = "Video URL:"
         category = 'Science & Technology'
         description = self.create_description()
+        print('title:', self.name)
+        print('description:', description)
+        print('category:', category)
+        print('tags:', self.tags)
+        print('thumb_path:', self.thumb_path)
+        print('results_path:', self.result_path)
+        print('secret_path:', self.secret_path)
         upload_cmd = ['youtube-upload',
                       '--title=' + self.name,
                       '--description=' + description,
@@ -48,16 +59,18 @@ class ContentUploader(object):
                       '--thumbnail=' + self.thumb_path,
                       '--client-secrets=' + self.secret_path,
                       self.result_path]
-
+        print('attempting to upload file...')
         try:
             proc = subprocess.Popen(upload_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in proc.stdout:
                 entry = line.decode('utf-8')
+                print('proc entry: ', entry)
                 if key in entry:
                     url = entry[len(key):]
                     self.url = url
             proc.wait()
         except subprocess.CalledProcessError as e:
+            print('exception occured')
             print(e.output)
 
     def create_description(self):

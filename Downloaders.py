@@ -99,6 +99,7 @@ class VidDownloader(Downloader):
                 if 20 > duration.minute > 0:
                     interval = self.generate_interval(video, duration)
                     self.interval_lst.append(interval)
+                    print('starting to download new video')
                     video.getbest(preftype='mp4').download(self.download_path, quiet=True, meta=True,
                                                            callback=self.download_handler)
                     self.store(url(video), 'vid')
@@ -140,6 +141,7 @@ class VidDownloader(Downloader):
 
     @staticmethod
     def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
+        #print('handling download')
         percent_downloaded = round(int(ratio_downloaded * 100))
         if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
             config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
