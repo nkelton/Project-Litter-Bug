@@ -11,7 +11,6 @@ if __name__ == '__main__':
     while True:
         try:
             logging.info('attempting to run litter bug as subprocess')
-            proc = subprocess.Popen(litter_bug, stderr=subprocess.STDOUT)
-            proc.wait()
+            subprocess.Popen(litter_bug, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).wait()
         except subprocess.CalledProcessError as e:
             logging.error(e)
