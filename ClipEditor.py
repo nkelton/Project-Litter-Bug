@@ -1,4 +1,5 @@
 import glob
+import logging
 import random
 import moviepy.video.fx.all as vfx
 from moviepy.audio.AudioClip import CompositeAudioClip
@@ -29,6 +30,8 @@ class ClipEditor(object):
         self.interval_lst = []
 
     def create_clip(self):
+        logging.info('creating clip')
+
         def name(vid):
             return vid[vid.rfind('/') + 1:-4]
 
@@ -66,14 +69,19 @@ class ClipEditor(object):
         return m_clip
 
     def decorate_clip(self, clip):
+        logging.info('decorating clip')
+        logging.info('adding screens')
         clip = self.add_screens(clip)
+        logging.info('adding pictures')
         clip = self.add_pics(clip)
+        logging.info('adding gifs')
         clip = self.add_gifs(clip)
+        logging.info('adding sfx')
         clip = self.add_sfx(clip)
         return clip
 
     def add_screens(self, clip):
-        screen_num = random.randint(1, 5)
+        screen_num = random.randint(3, 7)
         screen_clip = [clip]
         for i in range(screen_num):
             x_pos, y_pos, x_size, y_size = self.generate_coordinates(clip)
@@ -127,11 +135,14 @@ class ClipEditor(object):
         return x_pos, y_pos, x_size, y_size
 
     def download_result(self):
+        logging.info('downloading result')
         self.set_final_clip()
         self.add_intro()
+        logging.info('writing final clip')
         self.final_clip.write_videofile(self.result_path, verbose=False, progress_bar=True)
 
     def add_intro(self):
+        logging.info('adding intro')
         intro = self.generate_intro()
         new_final_clip = concatenate_videoclips([intro, self.get_final_clip()], method='compose')
         self.update_final_clip(new_final_clip)
@@ -155,14 +166,8 @@ class ClipEditor(object):
         return self.final_clip
 
     def set_final_clip(self):
+        logging.info('setting final clip')
         self.final_clip = concatenate_videoclips(self.clips, method='compose').resize((1280, 720))
-
-    def reset_final_clip(self):
-        self.final_clip = None
 
     def update_final_clip(self, clip):
         self.final_clip = clip
-
-    def clear_clips_data(self):
-        del self.clips[:]
-        del self.interval_lst[:]

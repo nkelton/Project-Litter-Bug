@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import requests
@@ -15,8 +16,11 @@ class LitterBug(object):
         self.status = self.set_status('Initialized...')
 
     def generate_clip(self):
+        logging.info('attempting to download content')
         self.download_content()
+        logging.info('attempting to create clip')
         self.create_clip()
+        logging.info('attempting to download clip')
         self.download_clip()
 
     def download_content(self):
@@ -42,6 +46,7 @@ class LitterBug(object):
         self.ContentUploader.upload_content()
 
     def clean_up(self):
+        logging.info('attempting to clean up')
         self.set_status('Preparing to generate more content...')
         self.clear_folder(self.ContentManager.vid_path)
         self.clear_folder(self.ContentManager.gif_path)
@@ -51,6 +56,7 @@ class LitterBug(object):
         time.sleep(5)
 
     def exception_handler(self):
+        logging.info('handling exception')
         self.set_status('Something went wrong...')
         config.GLOBAL_DOWNLOAD_TRACKER = 100
         end_point = self._url('/script/1/')
@@ -58,6 +64,12 @@ class LitterBug(object):
             'download': config.GLOBAL_DOWNLOAD_TRACKER,
         })
         time.sleep(5)
+
+    def set_status(self, status):
+        self.status = status
+        task = {'status': self.status}
+        url = self._url('/script/1/')
+        return requests.patch(url, json=task)
 
     @staticmethod
     def clear_folder(folder):
@@ -73,12 +85,6 @@ class LitterBug(object):
     def clear_file(path):
         if os.path.exists(path):
             os.remove(path)
-
-    def set_status(self, status):
-        self.status = status
-        task = {'status': self.status}
-        url = self._url('/script/1/')
-        return requests.patch(url, json=task)
 
     @staticmethod
     def _url(path):

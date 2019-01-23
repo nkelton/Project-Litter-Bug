@@ -19,10 +19,10 @@ class ContentManager(object):
         self.result_path = config.RESULT_PATH + self.name
         self.thumb_path = config.THUMB_PATH
 
-        self.vid_num = random.randint(3,6)
-        self.gif_num = random.randint(3,9)
-        self.pic_num = random.randint(3,9)
-        self.sfx_num = random.randint(3,9)
+        self.vid_num = random.randint(3, 6)
+        self.gif_num = random.randint(3, 9)
+        self.pic_num = random.randint(3, 9)
+        self.sfx_num = random.randint(3, 9)
 
         self.VidDownloader = VidDownloader(config.YOUTUBE_API_KEY, self.vid_path, self.vid_num, self.id)
         self.GifDownloader = GifDownloader(config.GIPHY_API_KEY, self.gif_path, self.gif_num, self.id)
