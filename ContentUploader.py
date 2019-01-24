@@ -138,7 +138,7 @@ class ContentUploader(object):
             'url': self.url,
             'weight': self.weight,
         })
-        logging.error('POST RESPONSE: ' + response.content)
+        logging.error('POST RESPONSE: ' + response.text)
 
     @staticmethod
     def _url(path):
