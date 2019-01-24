@@ -46,7 +46,7 @@ class ContentUploader(object):
         process_output = []
         category = 'Science & Technology'
         description = self.create_description()
-        logging.warning('title: ' + self.name)
+        logging.warning('title: ' + self.name[:-4])
         logging.warning('description: ' + description)
         logging.warning('category: ' + category)
         logging.warning('tags: ' + self.tags)
@@ -54,7 +54,7 @@ class ContentUploader(object):
         logging.warning('results_path: ' + self.result_path)
         logging.warning('secret_path: ' + self.secret_path)
         upload_cmd = ['youtube-upload',
-                      '--title=' + self.name,
+                      '--title=' + self.name[:-4],
                       '--description=' + description,
                       '--category=' + category,
                       '--tags=' + self.tags,
@@ -70,6 +70,7 @@ class ContentUploader(object):
             self.url = self.extract_url(process_output)
             logging.warning('resulting url: ' + self.url)
         except subprocess.CalledProcessError as e:
+            logging.error('Error called in ContentUploader.upload()')
             logging.error(e)
 
     @staticmethod
@@ -127,17 +128,17 @@ class ContentUploader(object):
     def store(self):
         url = self._url('/litter/')
         logging.error('POST to url: ' + url)
-        logging.error('litter_id: ' + self.id)
-        logging.error('name: ' + self.name)
+        logging.error('litter_id: ' + str(self.id))
+        logging.error('name: ' + self.name[:-4])
         logging.error('url: ' + self.url)
         logging.error('weight: ' + self.weight)
         response = requests.post(url, json={
             'litter_id': self.id,
-            'title': self.name,
+            'title': self.name[:-4],
             'url': self.url,
             'weight': self.weight,
         })
-        logging.error('POST RESPONSE: ' +  response.content)
+        logging.error('POST RESPONSE: ' + response.content)
 
     @staticmethod
     def _url(path):

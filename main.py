@@ -14,6 +14,7 @@ if __name__ == '__main__':
         lb.upload_clip()
 
     except Exception as e:
+        logging.warning('Exception occured at mainy.py')
         logging.error(e)
         logging.warning('attempting to handle exception')
         lb.exception_handler()
