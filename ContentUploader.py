@@ -119,12 +119,18 @@ class ContentUploader(object):
 
     def get_weight(self):
         if os.path.exists(self.result_path):
+            logging.error('weight exists!')
             self.weight = os.path.getsize(self.result_path)
         else:
             self.weight = 0
 
     def store(self):
         url = self._url('/litter/')
+        logging.error('POST to url: ' + url)
+        logging.error('litter_id: ' + self.id)
+        logging.error('name: ' + self.name)
+        logging.error('url: ' + self.url)
+        logging.error('weight: ' + self.weight)
         requests.post(url, json={
             'litter_id': self.id,
             'title': self.name,
