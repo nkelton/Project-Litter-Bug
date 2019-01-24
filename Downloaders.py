@@ -84,7 +84,7 @@ class VidDownloader(Downloader):
         self.interval_lst = []
 
     def download(self):
-        logging.info('downloading videos')
+        logging.warning('downloading videos')
 
         def url(video):
             return 'https://www.youtube.com/watch?v=' + video.videoid
@@ -161,7 +161,7 @@ class GifDownloader(Downloader):
         super(GifDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logging.info('downloading gifs')
+        logging.warning('downloading gifs')
 
         def generate_rating():
             choice = random.randint(0, 2)
@@ -202,7 +202,7 @@ class PicDownloader(Downloader):
         super(PicDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logging.info('downloading pictures')
+        logging.warning('downloading pictures')
 
         pix = Image(self.key)
         i = 0
@@ -226,7 +226,7 @@ class SfxDownloader(Downloader):
         super(SfxDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logging.info('downloading sfx')
+        logging.warning('downloading sfx')
         client = freesound.FreesoundClient()
         client.set_token(self.key)
         i = 0

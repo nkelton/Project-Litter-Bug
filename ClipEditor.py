@@ -30,7 +30,7 @@ class ClipEditor(object):
         self.interval_lst = []
 
     def create_clip(self):
-        logging.info('creating clip')
+        logging.warning('creating clip')
 
         def name(vid):
             return vid[vid.rfind('/') + 1:-4]
@@ -69,14 +69,14 @@ class ClipEditor(object):
         return m_clip
 
     def decorate_clip(self, clip):
-        logging.info('decorating clip')
-        logging.info('adding screens')
+        logging.warning('decorating clip')
+        logging.warning('adding screens')
         clip = self.add_screens(clip)
-        logging.info('adding pictures')
+        logging.warning('adding pictures')
         clip = self.add_pics(clip)
-        logging.info('adding gifs')
+        logging.warning('adding gifs')
         clip = self.add_gifs(clip)
-        logging.info('adding sfx')
+        logging.warning('adding sfx')
         clip = self.add_sfx(clip)
         return clip
 
@@ -135,14 +135,14 @@ class ClipEditor(object):
         return x_pos, y_pos, x_size, y_size
 
     def download_result(self):
-        logging.info('downloading result')
+        logging.warning('downloading result')
         self.set_final_clip()
         self.add_intro()
-        logging.info('writing final clip')
+        logging.warning('writing final clip')
         self.final_clip.write_videofile(self.result_path, verbose=False, progress_bar=True)
 
     def add_intro(self):
-        logging.info('adding intro')
+        logging.warning('adding intro')
         intro = self.generate_intro()
         new_final_clip = concatenate_videoclips([intro, self.get_final_clip()], method='compose')
         self.update_final_clip(new_final_clip)
@@ -166,7 +166,7 @@ class ClipEditor(object):
         return self.final_clip
 
     def set_final_clip(self):
-        logging.info('setting final clip')
+        logging.warning('setting final clip')
         self.final_clip = concatenate_videoclips(self.clips, method='compose').resize((1280, 720))
 
     def update_final_clip(self, clip):
