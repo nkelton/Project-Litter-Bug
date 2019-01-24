@@ -127,11 +127,11 @@ class ContentUploader(object):
 
     def store(self):
         url = self._url('/litter/')
-        logging.error('POST to url: ' + url)
+        logging.error('POST to url: ' + url + ' %%%%')
         logging.error('litter_id: ' + str(self.id))
         logging.error('name: ' + self.name[:-4])
-        logging.error('url: ' + self.url)
-        logging.error('weight: ' + self.weight)
+        logging.error('url: ' + self.url + ' %%%%')
+        logging.error('weight: ' + str(self.weight))
         response = requests.post(url, json={
             'litter_id': self.id,
             'title': self.name[:-4],
