@@ -131,12 +131,13 @@ class ContentUploader(object):
         logging.error('name: ' + self.name)
         logging.error('url: ' + self.url)
         logging.error('weight: ' + self.weight)
-        requests.post(url, json={
+        response = requests.post(url, json={
             'litter_id': self.id,
             'title': self.name,
             'url': self.url,
             'weight': self.weight,
         })
+        logging.error('POST RESPONSE: ' +  response.content)
 
     @staticmethod
     def _url(path):
