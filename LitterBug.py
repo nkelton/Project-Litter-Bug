@@ -7,6 +7,8 @@ import config
 from ContentManager import ContentManager
 from ContentUploader import ContentUploader
 
+logger = logging.getLogger(__name__)
+
 
 #TODO: faciliate name, id, and video path within Litter Bug, since values belong to both ContentManager and ContentUploader
 class LitterBug(object):
@@ -16,11 +18,11 @@ class LitterBug(object):
         self.status = self.set_status('Initialized...')
 
     def generate_clip(self):
-        logging.warning('attempting to download content')
+        logger.warning('attempting to download content')
         self.download_content()
-        logging.warning('attempting to create clip')
+        logger.warning('attempting to create clip')
         self.create_clip()
-        logging.warning('attempting to download clip')
+        logger.warning('attempting to download clip')
         self.download_clip()
 
     def download_content(self):
@@ -46,7 +48,7 @@ class LitterBug(object):
         self.ContentUploader.upload_content()
 
     def clean_up(self):
-        logging.warning('attempting to clean up')
+        logger.warning('attempting to clean up')
         self.set_status('Preparing to generate more content...')
         self.clear_folder(self.ContentManager.vid_path)
         self.clear_folder(self.ContentManager.gif_path)
@@ -56,7 +58,7 @@ class LitterBug(object):
         time.sleep(5)
 
     def exception_handler(self):
-        logging.warning('handling exception')
+        logger.warning('handling exception')
         self.set_status('Something went wrong...')
         config.GLOBAL_DOWNLOAD_TRACKER = 100
         end_point = self._url('/script/1/')

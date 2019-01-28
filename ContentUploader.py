@@ -7,6 +7,8 @@ from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 import config
 
+logger = logging.getLogger(__name__)
+
 
 class ContentUploader(object):
     def __init__(self, name, result_path, id):
@@ -21,13 +23,13 @@ class ContentUploader(object):
         self.weight = None
 
     def upload_content(self):
-        logging.warning('Creating thumbnail...')
+        logger.warning('Creating thumbnail...')
         self.create_thumbnail()
-        logging.warning('Getting weight...')
+        logger.warning('Getting weight...')
         self.get_weight()
-        logging.warning('Uploading...')
+        logger.warning('Uploading...')
         self.upload()
-        logging.warning('Storing...')
+        logger.warning('Storing...')
         self.store()
 
     def create_thumbnail(self):
@@ -42,17 +44,17 @@ class ContentUploader(object):
         CompositeVideoClip([background, logo, text]).save_frame(self.thumb_path)
 
     def upload(self):
-        logging.warning('attempting to upload file...')
+        logger.warning('attempting to upload file...')
         process_output = []
         category = 'Science & Technology'
         description = self.create_description()
-        logging.warning('title: ' + self.name[:-4])
-        logging.warning('description: ' + description)
-        logging.warning('category: ' + category)
-        logging.warning('tags: ' + self.tags)
-        logging.warning('thumb_path: ' + self.thumb_path)
-        logging.warning('results_path: ' + self.result_path)
-        logging.warning('secret_path: ' + self.secret_path)
+        logger.warning('title: ' + self.name[:-4])
+        logger.warning('description: ' + description)
+        logger.warning('category: ' + category)
+        logger.warning('tags: ' + self.tags)
+        logger.warning('thumb_path: ' + self.thumb_path)
+        logger.warning('results_path: ' + self.result_path)
+        logger.warning('secret_path: ' + self.secret_path)
         upload_cmd = ['youtube-upload',
                       '--title=' + self.name[:-4],
                       '--description=' + description,
@@ -68,19 +70,19 @@ class ContentUploader(object):
                 process_output.append(entry)
             proc.wait()
             self.url = self.extract_url(process_output)
-            logging.warning('resulting url: ' + self.url)
+            logger.warning('resulting url: ' + self.url)
         except subprocess.CalledProcessError as e:
-            logging.error('Error called in ContentUploader.upload()')
-            logging.error(e)
+            logger.error('Error called in ContentUploader.upload()')
+            logger.error(e)
 
     @staticmethod
     def extract_url(process_output):
-        logging.warning('extracting url...')
+        logger.warning('extracting url...')
         key = "Video URL:"
         for entry in process_output:
-            logging.warning('searching entry: ' + entry)
+            logger.warning('searching entry: ' + entry)
             if key in entry:
-                logging.warning('key found!!!')
+                logger.warning('key found!!!')
                 return entry[len(key):]
         return ""
 
@@ -120,25 +122,25 @@ class ContentUploader(object):
 
     def get_weight(self):
         if os.path.exists(self.result_path):
-            logging.error('weight exists!')
+            logger.error('weight exists!')
             self.weight = os.path.getsize(self.result_path)
         else:
             self.weight = 0
 
     def store(self):
         url = self._url('/litter/')
-        logging.error('POST to url: ' + url + ' %%%%')
-        logging.error('litter_id: ' + str(self.id))
-        logging.error('name: ' + self.name[:-4])
-        logging.error('url: ' + self.url + ' %%%%')
-        logging.error('weight: ' + str(self.weight))
+        logger.error('POST to url: ' + url + ' %%%%')
+        logger.error('litter_id: ' + str(self.id))
+        logger.error('name: ' + self.name[:-4])
+        logger.error('url: ' + self.url + ' %%%%')
+        logger.error('weight: ' + str(self.weight))
         response = requests.post(url, json={
             'litter_id': self.id,
             'title': self.name[:-4],
             'url': self.url,
             'weight': self.weight,
         })
-        logging.error('POST RESPONSE: ' + response.text)
+        logger.error('POST RESPONSE: ' + response.text)
 
     @staticmethod
     def _url(path):

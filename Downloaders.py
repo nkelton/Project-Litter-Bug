@@ -16,6 +16,8 @@ from tqdm import tqdm
 
 import config
 
+logger = logging.getLogger(__name__)
+
 
 class Downloader(object):
     def __init__(self, key, download_path, download_num, id):
@@ -84,7 +86,7 @@ class VidDownloader(Downloader):
         self.interval_lst = []
 
     def download(self):
-        logging.warning('downloading videos')
+        logger.warning('downloading videos')
 
         def url(video):
             return 'https://www.youtube.com/watch?v=' + video.videoid
@@ -161,7 +163,7 @@ class GifDownloader(Downloader):
         super(GifDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logging.warning('downloading gifs')
+        logger.warning('downloading gifs')
 
         def generate_rating():
             choice = random.randint(0, 2)
@@ -194,7 +196,7 @@ class GifDownloader(Downloader):
                     self.store(url, 'gif')
                     i += 1
             except ApiException as e:
-                logging.error("Exception when calling DefaultApi->stickers_random_get: %s\n" % e)
+                logger.error("Exception when calling DefaultApi->stickers_random_get: %s\n" % e)
 
 
 class PicDownloader(Downloader):
@@ -202,7 +204,7 @@ class PicDownloader(Downloader):
         super(PicDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logging.warning('downloading pictures')
+        logger.warning('downloading pictures')
 
         pix = Image(self.key)
         i = 0
@@ -226,7 +228,7 @@ class SfxDownloader(Downloader):
         super(SfxDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logging.warning('downloading sfx')
+        logger.warning('downloading sfx')
         client = freesound.FreesoundClient()
         client.set_token(self.key)
         i = 0
