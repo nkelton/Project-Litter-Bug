@@ -91,7 +91,8 @@ class ContentUploader(object):
                 url_start_index = entry.find(yt_url_base)
                 if url_start_index != -1:
                     logging.warning('url_start_index: ' + str(url_start_index))
-                    return entry[url_start_index:len(yt_url_base) + 11]
+                    url_end_index = url_start_index + len(yt_url_base) + 11
+                    return entry[url_start_index: url_end_index]
         return ""
 
     def create_description(self):
