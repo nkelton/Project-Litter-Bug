@@ -7,6 +7,7 @@ import config
 from ContentManager import ContentManager
 from ContentUploader import ContentUploader
 
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -43,6 +44,7 @@ class LitterBug(object):
 
     def upload_clip(self):
         self.set_status('Uploading newly generated content...')
+        time.sleep(5)
         self.ContentManager.retrieve_tags()
         self.ContentUploader.set_tags(self.ContentManager.tags)
         self.ContentUploader.upload_content()

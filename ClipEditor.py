@@ -8,6 +8,9 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips
 from moviepy.video.VideoClip import ImageClip, ColorClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
+import config
+
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 

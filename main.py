@@ -1,8 +1,10 @@
 # TODO: refactor for Python3
 import logging
 
+import config
 from LitterBug import LitterBug
 
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':

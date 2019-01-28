@@ -1,12 +1,15 @@
 import logging
 import os
 import subprocess
+import time
+
 import requests
 from moviepy.video.VideoClip import ImageClip, ColorClip, TextClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 import config
 
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -25,6 +28,7 @@ class ContentUploader(object):
     def upload_content(self):
         logger.warning('Creating thumbnail...')
         self.create_thumbnail()
+        time.sleep(3)
         logger.warning('Getting weight...')
         self.get_weight()
         logger.warning('Uploading...')
@@ -78,12 +82,19 @@ class ContentUploader(object):
     @staticmethod
     def extract_url(process_output):
         logger.warning('extracting url...')
+        yt_url_base = 'https://www.youtube.com/watch?v='
         key = "Video URL:"
         for entry in process_output:
             logger.warning('searching entry: ' + entry)
             if key in entry:
                 logger.warning('key found!!!')
-                return entry[len(key):]
+                url_start_index = entry.find(yt_url_base)
+                if url_start_index != -1:
+                    logging.warning('url_start_index: ' + str(url_start_index))
+                    url_end_index = entry.find(' ', url_start_index)
+                    if url_end_index != -1:
+                        logging.warning('url_end_index: ' + str(url_end_index))
+                        return entry[url_start_index:url_end_index]
         return ""
 
     def create_description(self):
