@@ -6,7 +6,7 @@ import config
 
 litter_bug = ['python3', config.BASE_PATH + 'main.py']
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s', stream=sys.stdout)
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
