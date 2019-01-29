@@ -16,4 +16,5 @@ if __name__ == '__main__':
             logger.warning('attempting to run litter bug as subprocess')
             subprocess.Popen(litter_bug, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).wait()
         except subprocess.CalledProcessError as e:
+            logger.warning('Error has occurred in run.py')
             logger.error(e)

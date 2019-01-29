@@ -28,7 +28,7 @@ class ContentUploader(object):
     def upload_content(self):
         logger.warning('Creating thumbnail...')
         self.create_thumbnail()
-        time.sleep(3)
+        time.sleep(5)
         logger.warning('Getting weight...')
         self.get_weight()
         logger.warning('Uploading...')
@@ -71,6 +71,7 @@ class ContentUploader(object):
             proc = subprocess.Popen(upload_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in proc.stdout:
                 entry = line.decode('utf-8')
+                logger.warning('appending entry:' + entry)
                 process_output.append(entry)
             proc.wait()
             self.url = self.extract_url(process_output)
@@ -85,12 +86,10 @@ class ContentUploader(object):
         yt_url_base = 'https://www.youtube.com/watch?v='
         key = "Video URL:"
         for entry in process_output:
-            logger.warning('searching entry: ' + entry)
             if key in entry:
-                logger.warning('key found!!!')
+                logger.warning('key found')
                 url_start_index = entry.find(yt_url_base)
                 if url_start_index != -1:
-                    logging.warning('url_start_index: ' + str(url_start_index))
                     url_end_index = url_start_index + len(yt_url_base) + 11
                     return entry[url_start_index: url_end_index]
         return ""
@@ -138,10 +137,9 @@ class ContentUploader(object):
 
     def store(self):
         url = self._url('/litter/')
-        logger.error('POST to url: ' + url + ' %%%%')
         logger.error('litter_id: ' + str(self.id))
         logger.error('name: ' + self.name[:-4])
-        logger.error('url: ' + self.url + ' %%%%')
+        logger.error('url: ' + self.url)
         logger.error('weight: ' + str(self.weight))
         response = requests.post(url, json={
             'litter_id': self.id,
