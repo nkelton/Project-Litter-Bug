@@ -45,7 +45,9 @@ class ContentUploader(object):
             .set_pos(('center', 'center'))
         text = TextClip(txt=str(self.id), size=(500, 500)).set_position(
             ('center', 'bottom'))
+        logger.warning('Saving thumbnail...')
         CompositeVideoClip([background, logo, text]).save_frame(self.thumb_path)
+        logger.warning('Thumbnail saved...')
 
     def upload(self):
         logger.warning('attempting to upload file...')
