@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 import freesound
 import giphy_client
+from googleapiclient.discovery_cache.appengine_memcache import Cache
 from pixabay import Image
 import requests
 from giphy_client.rest import ApiException
@@ -81,6 +82,16 @@ class Downloader(object):
         del self.tags[:]
 
 
+class MemoryCache(Cache):
+    _CACHE = {}
+
+    def get(self, url):
+        return MemoryCache._CACHE.get(url)
+
+    def set(self, url, content):
+        MemoryCache._CACHE[url] = content
+
+
 class VidDownloader(Downloader):
     def __init__(self, key, download_path, download_num, id):
         super(VidDownloader, self).__init__(key, download_path, download_num, id)
@@ -114,7 +125,8 @@ class VidDownloader(Downloader):
         id_lst = []
         YOUTUBE_API_SERVICE_NAME = 'youtube'
         YOUTUBE_API_VERSION = 'v3'
-        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.key)
+        #https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
+        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.key, cache=MemoryCache())
 
         while len(id_lst) != (self.download_num * 5):
             search = self.generate_keyword()
@@ -220,7 +232,7 @@ class PicDownloader(Downloader):
                 self.downloader(url, pic_path)
                 self.store(url, 'pic')
                 i += 1
-            time.sleep(2)
+            time.sleep(1)
 
 
 class SfxDownloader(Downloader):
