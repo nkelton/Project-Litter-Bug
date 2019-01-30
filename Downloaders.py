@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import freesound
 import giphy_client
-import python_pixabay
+from pixabay import Image
 import requests
 from giphy_client.rest import ApiException
 
@@ -206,11 +206,11 @@ class PicDownloader(Downloader):
     def download(self):
         logger.warning('downloading pictures')
 
-        pix = python_pixabay.Pixabay(self.key)
+        pix = Image(self.key)
         i = 0
         while i < self.download_num:
             search = self.generate_keyword()
-            img_search = pix.image_search(q=search, page=1, per_page=30)
+            img_search = pix.search(q=search, page=1, per_page=30)
             hits = len(img_search['hits'])
 
             if hits:
