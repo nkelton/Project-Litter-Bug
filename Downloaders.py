@@ -87,7 +87,7 @@ class VidDownloader(Downloader):
         self.interval_lst = []
 
     def download(self):
-        logger.warning('downloading videos')
+        logger.warning('Downloading videos...')
 
         def url(video):
             return 'https://www.youtube.com/watch?v=' + video.videoid
@@ -105,7 +105,6 @@ class VidDownloader(Downloader):
                 if 20 > duration.minute > 0:
                     interval = self.generate_interval(video, duration)
                     self.interval_lst.append(interval)
-                    print('starting to download new video')
                     video.getbest(preftype='mp4').download(self.download_path, quiet=True, meta=True,
                                                            callback=self.download_handler)
                     self.store(url(video), 'vid')

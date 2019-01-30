@@ -28,7 +28,6 @@ class ContentUploader(object):
     def upload_content(self):
         logger.warning('Creating thumbnail...')
         self.create_thumbnail()
-        time.sleep(5)
         logger.warning('Getting weight...')
         self.get_weight()
         logger.warning('Uploading...')
@@ -61,6 +60,13 @@ class ContentUploader(object):
         logger.warning('thumb_path: ' + self.thumb_path)
         logger.warning('results_path: ' + self.result_path)
         logger.warning('secret_path: ' + self.secret_path)
+
+        if os.path.exists(self.thumb_path):
+            logger.warning('THUMB PATH EXISTS!!!')
+
+        if os.path.exists(self.result_path):
+            logging.warning('RESULTS PATH EXISTS!!!')
+
         upload_cmd = ['youtube-upload',
                       '--title=' + self.name[:-4],
                       '--description=' + description,
@@ -89,7 +95,7 @@ class ContentUploader(object):
         key = "Video URL:"
         for entry in process_output:
             if key in entry:
-                logger.warning('key found')
+                logger.warning('Key found')
                 url_start_index = entry.find(yt_url_base)
                 if url_start_index != -1:
                     url_end_index = url_start_index + len(yt_url_base) + 11
@@ -132,7 +138,7 @@ class ContentUploader(object):
 
     def get_weight(self):
         if os.path.exists(self.result_path):
-            logger.error('weight exists!')
+            logger.error('Weighing result...')
             self.weight = os.path.getsize(self.result_path)
         else:
             self.weight = 0
