@@ -6,8 +6,7 @@ from datetime import datetime, timedelta
 
 import freesound
 import giphy_client
-from googleapiclient.discovery_cache.appengine_memcache import Cache
-from pixabay import Image
+import python_pixabay
 import requests
 from giphy_client.rest import ApiException
 
@@ -82,16 +81,6 @@ class Downloader(object):
         del self.tags[:]
 
 
-class MemoryCache(Cache):
-    _CACHE = {}
-
-    def get(self, url):
-        return MemoryCache._CACHE.get(url)
-
-    def set(self, url, content):
-        MemoryCache._CACHE[url] = content
-
-
 class VidDownloader(Downloader):
     def __init__(self, key, download_path, download_num, id):
         super(VidDownloader, self).__init__(key, download_path, download_num, id)
@@ -125,8 +114,7 @@ class VidDownloader(Downloader):
         id_lst = []
         YOUTUBE_API_SERVICE_NAME = 'youtube'
         YOUTUBE_API_VERSION = 'v3'
-        #https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
-        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.key, cache=MemoryCache())
+        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.key, cache_discovery=False)
 
         while len(id_lst) != (self.download_num * 5):
             search = self.generate_keyword()
@@ -218,11 +206,11 @@ class PicDownloader(Downloader):
     def download(self):
         logger.warning('downloading pictures')
 
-        pix = Image(self.key)
+        pix = python_pixabay.Pixabay(self.key)
         i = 0
         while i < self.download_num:
             search = self.generate_keyword()
-            img_search = pix.search(q=search, page=1, per_page=30)
+            img_search = pix.image_search(q=search, page=1, per_page=30)
             hits = len(img_search['hits'])
 
             if hits:
