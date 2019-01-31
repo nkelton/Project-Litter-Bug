@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-import time
 
 import requests
 from moviepy.video.VideoClip import ImageClip, ColorClip, TextClip
@@ -84,6 +83,9 @@ class ContentUploader(object):
             proc.wait()
             self.url = self.extract_url(process_output)
             logger.warning('resulting url: ' + self.url)
+
+
+
         except subprocess.CalledProcessError as e:
             logger.error('Error called in ContentUploader.upload()')
             logger.error(e)

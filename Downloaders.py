@@ -54,7 +54,6 @@ class Downloader(object):
                         'download': config.GLOBAL_DOWNLOAD_TRACKER,
                     })
                     time.sleep(.1)
-
         f.close()
 
     def generate_keyword(self):
