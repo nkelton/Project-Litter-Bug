@@ -32,19 +32,15 @@ class ContentUploader(object):
         self.weight = None
 
     def upload_content(self):
-        logger.warning('Getting weight...')
+        logger.info('Uploading content...')
         self.get_weight()
-        logger.warning('Uploading...')
         self.upload()
-        logger.warning('Storing...')
         self.store()
-        logger.warning('Creating thumbnail...')
         self.create_thumbnail()
-        logger.warning('Setting thumbnail...')
         self.set_thumbnail()
 
     def upload(self):
-        logger.warning('attempting to upload file...')
+        logger.info('Uploading...')
         category = 'Science & Technology'
         description = self.create_description()
         logger.warning('title: ' + self.name[:-4])
@@ -63,28 +59,30 @@ class ContentUploader(object):
                       '--tags=' + self.tags,
                       '--client-secrets=' + self.secret_path,
                       self.result_path]
+
         try:
+            logger.info('Attempting to run youtube-upload...')
             proc = subprocess.Popen(upload_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in proc.stdout:
                 entry = line.decode('utf-8')
-                logger.warning('appending entry:' + entry)
+                logger.info('appending entry:' + entry)
                 process_output.append(entry)
             proc.wait()
             self.url = self.extract_url(process_output)
-            logger.warning('resulting url: ' + self.url)
+            logger.info('resulting url: ' + self.url)
 
         except subprocess.CalledProcessError as e:
-            logger.error('Error called in ContentUploader.upload()')
+            logger.error('Error occured while attempting to run youtube-upload')
             logger.error(e)
 
     @staticmethod
     def extract_url(process_output):
-        logger.warning('extracting url...')
+        logger.info('Extracting url...')
         yt_url_base = 'https://www.youtube.com/watch?v='
         key = "Video URL:"
         for entry in process_output:
             if key in entry:
-                logger.warning('Key found')
+                logger.info('Key found!')
                 url_start_index = entry.find(yt_url_base)
                 if url_start_index != -1:
                     url_end_index = url_start_index + len(yt_url_base) + 11
@@ -126,6 +124,7 @@ class ContentUploader(object):
         return content_str
 
     def get_weight(self):
+        logger.info('Getting weight...')
         if os.path.exists(self.result_path):
             logger.error('Weighing result...')
             self.weight = os.path.getsize(self.result_path)
@@ -133,20 +132,17 @@ class ContentUploader(object):
             self.weight = 0
 
     def store(self):
+        logger.info('Storing data...')
         url = self._url('/litter/')
-        logger.error('litter_id: ' + str(self.id))
-        logger.error('name: ' + self.name[:-4])
-        logger.error('url: ' + self.url)
-        logger.error('weight: ' + str(self.weight))
         response = requests.post(url, json={
             'litter_id': self.id,
             'title': self.name[:-4],
             'url': self.url,
             'weight': self.weight,
         })
-        logger.error('POST RESPONSE: ' + response.text)
 
     def create_thumbnail(self):
+        logger.info('Creating thumbnail...')
         color = (255, 255, 255)
         size = (1280, 720)
         background = ColorClip(size, color)
@@ -155,12 +151,13 @@ class ContentUploader(object):
             .set_pos(('center', 'center'))
         text = TextClip(txt=str(self.id), size=(500, 500)).set_position(
             ('center', 'bottom'))
-        logger.warning('Saving thumbnail...')
         CompositeVideoClip([background, logo, text]).save_frame(self.thumb_path)
-        logger.warning('Thumbnail saved...')
 
     def set_thumbnail(self):
+        logger.info('Setting thumbnail...')
+
         def get_authenticated_service():
+            logger.info('Authenticating servie...')
             flow = flow_from_clientsecrets(config.SECRET_PATH,
                                            scope=config.YOUTUBE_READ_WRITE_SCOPE,
                                            message=config.MISSING_CLIENT_SECRETS_MESSAGE)
@@ -175,18 +172,21 @@ class ContentUploader(object):
                          http=credentials.authorize(httplib2.Http()))
 
         def upload_thumbnail(youtube, video_id):
+            logger.info('Uploading thumbnail...')
             youtube.thumbnails().set(
                 videoId=video_id,
                 media_body=config.THUMB_PATH
             ).execute()
 
         youtube = get_authenticated_service()
+        logger.info('Attaching thumbail to videoId: ' + self.url[-11:])
         try:
             upload_thumbnail(youtube, self.url[-11:])
-        except HttpError:
+        except HttpError as e:
             logger.error("Error occured setting thumbnail...")
+            logger.error(e.content)
         else:
-            logger.warning("Thumbnail successfully set.")
+            logger.info("Thumbnail successfully set.")
 
     @staticmethod
     def _url(path):
