@@ -22,8 +22,8 @@ class ContentManager(object):
 
         self.VidDownloader = VidDownloader(config.YOUTUBE_API_KEY, config.VID_PATH, self.vid_num, self.id)
         self.GifDownloader = GifDownloader(config.GIPHY_API_KEY, config.GIF_PATH, self.gif_num, self.id)
-        self.PicDownloader = PicDownloader(config.PIXABAY_API_KEY, config.VID_PATH, self.pic_num, self.id)
-        self.SfxDownloader = SfxDownloader(config.FREESOUND_API_KEY, config.VID_PATH, self.sfx_num, self.id)
+        self.PicDownloader = PicDownloader(config.PIXABAY_API_KEY, config.PIC_PATH, self.pic_num, self.id)
+        self.SfxDownloader = SfxDownloader(config.FREESOUND_API_KEY, config.SFX_PATH, self.sfx_num, self.id)
 
         self.ClipEditor = ClipEditor(self.vid_num, self.gif_num, self.pic_num, self.sfx_num, self.result_path)
 
