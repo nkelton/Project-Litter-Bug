@@ -54,7 +54,6 @@ class ClipEditor(object):
             m_clip = (clip.fx(vfx.invert_colors)
                       .fx(vfx.colorx, factor=random.randint(0, 50))
                       .fx(vfx.gamma_corr, gamma=random.uniform(0, 5)))
-
         elif m_type == 2:
             m_clip = (clip.fx(vfx.blackwhite)
                       .fx(vfx.gamma_corr, gamma=random.uniform(0, 5)))

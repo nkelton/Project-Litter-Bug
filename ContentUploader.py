@@ -38,8 +38,6 @@ class ContentUploader(object):
         logger.info('Uploading...')
         category = 'Science & Technology'
         description = self.create_description()
-        process_output = []
-
         upload_cmd = ['youtube-upload',
                       '--title=' + self.name[:-4],
                       '--description=' + description,
@@ -47,6 +45,7 @@ class ContentUploader(object):
                       '--tags=' + self.tags,
                       '--client-secrets=' + config.SECRET_PATH,
                       self.result_path]
+        process_output = []
 
         try:
             logger.info('Attempting to run youtube-upload...')
@@ -113,8 +112,8 @@ class ContentUploader(object):
 
     def get_weight(self):
         logger.info('Getting weight...')
+        logger.info('Getting weight from.: ' + self.result_path)
         if os.path.exists(self.result_path):
-            logger.error('Weighing result...')
             self.weight = os.path.getsize(self.result_path)
         else:
             self.weight = 0
