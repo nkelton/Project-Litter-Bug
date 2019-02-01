@@ -12,6 +12,8 @@ from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import run_flow
+from oauth2client import file
+
 
 import config
 
