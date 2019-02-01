@@ -4,7 +4,7 @@ import logging
 import config
 from LitterBug import LitterBug
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
@@ -18,7 +18,7 @@ if __name__ == '__main__':
         lb.upload_clip()
 
     except Exception as e:
-        logger.warning('Exception occured at mainy.py')
+        logger.warning('Exception occured at main.py')
         logger.error(e)
         logger.warning('attempting to handle exception')
         lb.exception_handler()

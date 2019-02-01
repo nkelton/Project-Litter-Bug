@@ -10,7 +10,7 @@ from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 import config
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(message)s')
+logging.basicConfig(filename=config.LOG, format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
 logger = logging.getLogger(__name__)
 
 
