@@ -18,7 +18,7 @@ logger = config.set_logger('ContentUploader.py')
 
 
 class ContentUploader(object):
-    def __init__(self, name, result_path, id):
+    def __init__(self, name, id, result_path):
         self.url = None
         self.name = name
         self.result_path = result_path
@@ -112,7 +112,6 @@ class ContentUploader(object):
 
     def get_weight(self):
         logger.info('Getting weight...')
-        logger.info('Getting weight from.: ' + self.result_path)
         if os.path.exists(self.result_path):
             self.weight = os.path.getsize(self.result_path)
         else:
