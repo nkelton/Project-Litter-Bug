@@ -9,7 +9,7 @@ litter_bug = ['python3', config.BASE_PATH + 'main.py']
 logger = config.set_logger()
 
 if __name__ == '__main__':
-    logger.info('BEGINNING OF LITTERBUG SCRIPT RUN.PY...')
+    logger.info('BEGINNING OF LITTER BUG SCRIPT RUN.PY...')
     while True:
         try:
             logger.info('LAUNCHING NEW LITTER BUG...')
