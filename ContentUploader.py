@@ -1,4 +1,3 @@
-import logging
 import os
 import subprocess
 import sys
@@ -15,8 +14,7 @@ from oauth2client.tools import run_flow
 
 import config
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
-logger = logging.getLogger(__name__)
+logger = config.set_logger()
 
 
 class ContentUploader(object):
@@ -24,9 +22,6 @@ class ContentUploader(object):
         self.url = None
         self.name = name
         self.result_path = result_path
-        self.thumb_path = config.THUMB_PATH
-        self.logo_path = config.LOGO_PATH
-        self.secret_path = config.SECRET_PATH
         self.id = id
         self.tags = None
         self.weight = None
@@ -43,13 +38,6 @@ class ContentUploader(object):
         logger.info('Uploading...')
         category = 'Science & Technology'
         description = self.create_description()
-        logger.warning('title: ' + self.name[:-4])
-        logger.warning('description: ' + description)
-        logger.warning('category: ' + category)
-        logger.warning('tags: ' + self.tags)
-        logger.warning('thumb_path: ' + self.thumb_path)
-        logger.warning('results_path: ' + self.result_path)
-        logger.warning('secret_path: ' + self.secret_path)
         process_output = []
 
         upload_cmd = ['youtube-upload',
@@ -57,7 +45,7 @@ class ContentUploader(object):
                       '--description=' + description,
                       '--category=' + category,
                       '--tags=' + self.tags,
-                      '--client-secrets=' + self.secret_path,
+                      '--client-secrets=' + config.SECRET_PATH,
                       self.result_path]
 
         try:
@@ -134,7 +122,7 @@ class ContentUploader(object):
     def store(self):
         logger.info('Storing data...')
         url = self._url('/litter/')
-        response = requests.post(url, json={
+        requests.post(url, json={
             'litter_id': self.id,
             'title': self.name[:-4],
             'url': self.url,
@@ -146,12 +134,12 @@ class ContentUploader(object):
         color = (255, 255, 255)
         size = (1280, 720)
         background = ColorClip(size, color)
-        logo = ImageClip(self.logo_path) \
+        logo = ImageClip(config.LOGO_PATH) \
             .resize(width=400, height=200) \
             .set_pos(('center', 'center'))
         text = TextClip(txt=str(self.id), size=(500, 500)).set_position(
             ('center', 'bottom'))
-        CompositeVideoClip([background, logo, text]).save_frame(self.thumb_path)
+        CompositeVideoClip([background, logo, text]).save_frame(config.THUMB_PATH)
 
     def set_thumbnail(self):
         logger.info('Setting thumbnail...')
@@ -179,7 +167,7 @@ class ContentUploader(object):
             ).execute()
 
         youtube = get_authenticated_service()
-        logger.info('Attaching thumbail to videoId: ' + self.url[-11:])
+        logger.info('Attaching thumbnail to videoId: ' + self.url[-11:])
         try:
             upload_thumbnail(youtube, self.url[-11:])
         except HttpError as e:

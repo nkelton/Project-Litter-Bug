@@ -1,4 +1,3 @@
-import logging
 import math
 import random
 import time
@@ -16,8 +15,7 @@ from tqdm import tqdm
 
 import config
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
-logger = logging.getLogger(__name__)
+logger = config.set_logger()
 
 
 class Downloader(object):
@@ -30,9 +28,8 @@ class Downloader(object):
 
     @staticmethod
     def downloader(url, download_path):
-        # Streaming, so we can iterate over the response.
+        logger.info('Downloading...')
         r = requests.get(url, stream=True)
-        # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
         block_size = 1024
         total_bytes = math.ceil(total_size // block_size)
@@ -57,6 +54,7 @@ class Downloader(object):
         f.close()
 
     def generate_keyword(self):
+        logger.info('Generating keyword...')
         word_url = 'https://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain'
         response = requests.get(word_url)
         words = response.content.splitlines()
@@ -65,6 +63,7 @@ class Downloader(object):
         return word
 
     def store(self, url, media):
+        logger.info('Storing media...')
         end_point = self._url('/content/')
         requests.post(end_point, json={
             'litter_id': self.id,
@@ -76,9 +75,6 @@ class Downloader(object):
     def _url(path):
         return config.BASE_URL + path
 
-    def reset(self):
-        del self.tags[:]
-
 
 class VidDownloader(Downloader):
     def __init__(self, key, download_path, download_num, id):
@@ -86,7 +82,7 @@ class VidDownloader(Downloader):
         self.interval_lst = []
 
     def download(self):
-        logger.warning('Downloading videos...')
+        logger.info('Downloading videos...')
 
         def url(video):
             return 'https://www.youtube.com/watch?v=' + video.videoid
@@ -111,9 +107,7 @@ class VidDownloader(Downloader):
 
     def get_vid_ids(self):
         id_lst = []
-        YOUTUBE_API_SERVICE_NAME = 'youtube'
-        YOUTUBE_API_VERSION = 'v3'
-        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=self.key, cache_discovery=False)
+        youtube = build(config.YOUTUBE_API_SERVICE_NAME, config.YOUTUBE_API_VERSION, developerKey=self.key, cache_discovery=False)
 
         while len(id_lst) != (self.download_num * 5):
             search = self.generate_keyword()
@@ -145,7 +139,6 @@ class VidDownloader(Downloader):
 
     @staticmethod
     def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
-        #print('handling download')
         percent_downloaded = round(int(ratio_downloaded * 100))
         if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
             config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
@@ -162,7 +155,7 @@ class GifDownloader(Downloader):
         super(GifDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logger.warning('downloading gifs')
+        logger.info('Downloading gifs...')
 
         def generate_rating():
             choice = random.randint(0, 2)
@@ -203,7 +196,7 @@ class PicDownloader(Downloader):
         super(PicDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logger.warning('downloading pictures')
+        logger.info('Downloading pictures...')
 
         pix = Image(self.key)
         i = 0
@@ -227,7 +220,7 @@ class SfxDownloader(Downloader):
         super(SfxDownloader, self).__init__(key, download_path, download_num, id)
 
     def download(self):
-        logger.warning('downloading sfx')
+        logger.info('Downloading sfx...')
         client = freesound.FreesoundClient()
         client.set_token(self.key)
         i = 0
@@ -241,5 +234,6 @@ class SfxDownloader(Downloader):
                 self.store(url, 'sfx')
                 i += 1
             except Exception as e:
-                print(e)
+                logger.error('Exception occrured while downloading sfx...')
+                logger.error(e)
 

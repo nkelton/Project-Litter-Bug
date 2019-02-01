@@ -10,37 +10,28 @@ from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 import config
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
-logger = logging.getLogger(__name__)
+logger = config.set_logger()
 
 
 class ClipEditor(object):
-    def __init__(self, vid_num, gif_num, pic_num, sfx_num, vid_path, gif_path,
-                 pic_path, sfx_path, logo_path, result_path, thumb_path):
+    def __init__(self, vid_num, gif_num, pic_num, sfx_num, result_path):
         self.vid_num = vid_num
         self.gif_num = gif_num
         self.pic_num = pic_num
         self.sfx_num = sfx_num
-
-        self.vid_path = vid_path
-        self.gif_path = gif_path
-        self.pic_path = pic_path
-        self.sfx_path = sfx_path
-        self.logo_path = logo_path
         self.result_path = result_path
-        self.thumb_path = thumb_path
-
+        
         self.final_clip = None
         self.clips = []
         self.interval_lst = []
 
     def create_clip(self):
-        logger.warning('creating clip')
+        logger.info('Creating clip...')
 
         def name(vid):
             return vid[vid.rfind('/') + 1:-4]
 
-        vid_lst = glob.glob(self.vid_path + '*.mp4')
+        vid_lst = glob.glob(config.VID_PATH + '*.mp4')
         for vid in vid_lst:
             vid_name = name(vid)
             for interval in self.interval_lst:
@@ -52,6 +43,7 @@ class ClipEditor(object):
 
     @staticmethod
     def modify_clip(clip):
+        logger.info('Modifying clip...')
         m_type = random.randint(0, 3)
 
         if m_type == 0:
@@ -74,18 +66,15 @@ class ClipEditor(object):
         return m_clip
 
     def decorate_clip(self, clip):
-        logger.warning('decorating clip')
-        logger.warning('adding screens')
+        logging.info('Decorating clip...')
         clip = self.add_screens(clip)
-        logger.warning('adding pictures')
         clip = self.add_pics(clip)
-        logger.warning('adding gifs')
         clip = self.add_gifs(clip)
-        logger.warning('adding sfx')
         clip = self.add_sfx(clip)
         return clip
 
     def add_screens(self, clip):
+        logger.info('Adding screens...')
         screen_num = random.randint(3, 7)
         screen_clip = [clip]
         for i in range(screen_num):
@@ -97,10 +86,11 @@ class ClipEditor(object):
         return CompositeVideoClip(screen_clip)
 
     def add_gifs(self, clip):
+        logger.info('Adding gifs...')
         gif_clip = [clip]
         for i in range(self.gif_num):
             x_pos, y_pos, x_size, y_size = self.generate_coordinates(clip)
-            gif_path = self.gif_path + str(i) + '.gif'
+            gif_path = config.GIF_PATH + str(i) + '.gif'
             gif = VideoFileClip(gif_path).loop(duration=clip.duration).set_duration(clip.duration) \
                 .fx(vfx.mask_color, color=[255, 255, 255]) \
                 .resize((x_size, y_size)).set_pos((x_pos, y_pos))
@@ -108,19 +98,21 @@ class ClipEditor(object):
         return CompositeVideoClip(gif_clip)
 
     def add_pics(self, clip):
+        logger.info('Adding pics...')
         pic_clip = [clip]
         for i in range(self.pic_num):
             x_pos, y_pos, x_size, y_size = self.generate_coordinates(clip)
-            pic_path = self.pic_path + str(i) + '.jpg'
+            pic_path = config.PIC_PATH + str(i) + '.jpg'
             pic = ImageClip(pic_path).set_duration(clip.duration).resize((x_size, y_size)) \
                 .set_pos((x_pos, y_pos)).add_mask().rotate(random.randint(-180, 180))
             pic_clip.append(pic)
         return CompositeVideoClip(pic_clip)
 
     def add_sfx(self, clip):
+        logger.info('Adding sfx...')
         new_audio = [clip.audio]
         for i in range(self.sfx_num):
-            sfx_path = self.sfx_path + str(i) + '.mp3'
+            sfx_path = config.SFX_PATH + str(i) + '.mp3'
             sfx_clip = AudioFileClip(sfx_path)
 
             if sfx_clip.duration > clip.duration:
@@ -133,6 +125,7 @@ class ClipEditor(object):
 
     @staticmethod
     def generate_coordinates(clip):
+        logger.info('Generating coordinates...')
         x_pos = random.randint(0, clip.w - 100)
         y_pos = random.randint(0, clip.h - 100)
         x_size = random.randint(100, clip.w)
@@ -140,39 +133,44 @@ class ClipEditor(object):
         return x_pos, y_pos, x_size, y_size
 
     def download_result(self):
-        logger.warning('downloading result')
+        logger.info('Downloading result...')
         self.set_final_clip()
         self.add_intro()
-        logger.warning('writing final clip')
+        logger.info('Writing final clip...')
         self.final_clip.write_videofile(self.result_path, verbose=False, progress_bar=True)
 
     def add_intro(self):
-        logger.warning('adding intro')
+        logger.info('Adding intro...')
         intro = self.generate_intro()
         new_final_clip = concatenate_videoclips([intro, self.get_final_clip()], method='compose')
         self.update_final_clip(new_final_clip)
 
     def generate_intro(self):
+        logger.info('Generating intro...')
         color = (255, 255, 255)
         size = (1280, 720)
         clip = ColorClip(size, color, duration=3)
-        logo = ImageClip(self.logo_path).set_duration(clip.duration) \
+        logo = ImageClip(config.LOGO_PATH).set_duration(clip.duration) \
             .resize(width=400, height=200) \
             .set_pos(('center', 'center'))
         return CompositeVideoClip([clip, logo])
 
     def add_clip(self, clip):
+        logger.info('Adding clip...')
         self.clips.append(clip)
 
     def set_interval_lst(self, lst):
+        logger.info('Setting interval list...')
         self.interval_lst = lst
 
     def get_final_clip(self):
+        logger.info('Getting final clip...')
         return self.final_clip
 
     def set_final_clip(self):
-        logger.warning('setting final clip')
+        logger.warning('Setting final clip...')
         self.final_clip = concatenate_videoclips(self.clips, method='compose').resize((1280, 720))
 
     def update_final_clip(self, clip):
+        logger.warning('Updating final clip...')
         self.final_clip = clip

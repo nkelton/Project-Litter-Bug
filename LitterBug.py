@@ -1,4 +1,3 @@
-import logging
 import os
 import time
 import requests
@@ -7,23 +6,20 @@ import config
 from ContentManager import ContentManager
 from ContentUploader import ContentUploader
 
-logging.basicConfig(filename=config.LOG, format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
-logger = logging.getLogger(__name__)
+logger = config.set_logger()
 
 
-#TODO: faciliate name, id, and video path within Litter Bug, since values belong to both ContentManager and ContentUploader
 class LitterBug(object):
     def __init__(self):
         self.ContentManager = ContentManager()
-        self.ContentUploader = ContentUploader(self.ContentManager.name, self.ContentManager.result_path, self.ContentManager.id)
+        self.ContentUploader = ContentUploader(self.ContentManager.name, self.ContentManager.id,
+                                               self.ContentManager.result_path)
         self.status = self.set_status('Initialized...')
 
     def generate_clip(self):
-        logger.warning('attempting to download content')
+        logger.info('Generating clip...')
         self.download_content()
-        logger.warning('attempting to create clip')
         self.create_clip()
-        logger.warning('attempting to download clip')
         self.download_clip()
 
     def download_content(self):
@@ -34,15 +30,18 @@ class LitterBug(object):
         self.ContentManager.SfxDownloader.download()
 
     def create_clip(self):
+        logger.info('Creating clip...')
         self.set_status('Randomizing content...')
         self.ContentManager.ClipEditor.set_interval_lst(self.ContentManager.VidDownloader.interval_lst)
         self.ContentManager.ClipEditor.create_clip()
 
     def download_clip(self):
+        logger.info('Downloading clip...')
         self.set_status('Downloading newly generated content...')
         self.ContentManager.ClipEditor.download_result()
 
     def upload_clip(self):
+        logger.info('Uploading clip...')
         self.set_status('Uploading newly generated content...')
         time.sleep(5)
         self.ContentManager.retrieve_tags()
@@ -50,17 +49,17 @@ class LitterBug(object):
         self.ContentUploader.upload_content()
 
     def clean_up(self):
-        logger.warning('attempting to clean up')
+        logger.info('Cleaning up...')
         self.set_status('Preparing to generate more content...')
-        self.clear_folder(self.ContentManager.vid_path)
-        self.clear_folder(self.ContentManager.gif_path)
-        self.clear_folder(self.ContentManager.pic_path)
-        self.clear_folder(self.ContentManager.sfx_path)
+        self.clear_folder(config.VID_PATH)
+        self.clear_folder(config.GIF_PATH)
+        self.clear_folder(config.PIC_PATH)
+        self.clear_folder(config.SFX_PATH)
         self.clear_file(self.ContentManager.result_path)
         time.sleep(5)
 
     def exception_handler(self):
-        logger.warning('handling exception')
+        logger.info('Handling exception...')
         self.set_status('Something went wrong...')
         config.GLOBAL_DOWNLOAD_TRACKER = 100
         end_point = self._url('/script/1/')
@@ -77,6 +76,7 @@ class LitterBug(object):
 
     @staticmethod
     def clear_folder(folder):
+        logger.info('Clearing folder: ' + folder)
         for the_file in os.listdir(folder):
             file_path = os.path.join(folder, the_file)
             try:
@@ -87,6 +87,7 @@ class LitterBug(object):
 
     @staticmethod
     def clear_file(path):
+        logger.info('Clearing file: ' + path)
         if os.path.exists(path):
             os.remove(path)
 
