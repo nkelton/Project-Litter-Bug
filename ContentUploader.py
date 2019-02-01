@@ -14,7 +14,7 @@ from oauth2client.tools import run_flow
 
 import config
 
-logger = config.set_logger()
+logger = config.set_logger('ContentUploader.py')
 
 
 class ContentUploader(object):

@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 import config
 
-logger = config.set_logger()
+logger = config.set_logger('Downloaders.py')
 
 
 class Downloader(object):

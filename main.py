@@ -1,7 +1,7 @@
 import config
 from LitterBug import LitterBug
 
-logger = config.set_logger()
+logger = config.set_logger('main.py')
 
 if __name__ == '__main__':
     logger.info('INITIALIZING LITTER BUG... ')

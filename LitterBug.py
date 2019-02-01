@@ -6,7 +6,7 @@ import config
 from ContentManager import ContentManager
 from ContentUploader import ContentUploader
 
-logger = config.set_logger()
+logger = config.set_logger('LitterBug.py')
 
 
 class LitterBug(object):

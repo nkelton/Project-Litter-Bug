@@ -4,7 +4,7 @@ import config
 from ClipEditor import ClipEditor
 from Downloaders import VidDownloader, GifDownloader, PicDownloader, SfxDownloader
 
-logger = config.set_logger()
+logger = config.set_logger('ContentManager.py')
 
 
 class ContentManager(object):

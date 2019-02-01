@@ -10,7 +10,7 @@ from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 import config
 
-logger = config.set_logger()
+logger = config.set_logger('ClipEditor.py')
 
 
 class ClipEditor(object):
