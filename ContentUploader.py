@@ -16,7 +16,7 @@ import config
 
 logger = config.set_logger('ContentUploader.py')
 
-
+#coment for push
 class ContentUploader(object):
     def __init__(self, name, id, result_path):
         self.url = None
