@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import time
 
 import httplib2
 import requests
@@ -16,7 +17,7 @@ import config
 
 logger = config.set_logger('ContentUploader.py')
 
-#coment for push
+
 class ContentUploader(object):
     def __init__(self, name, id, result_path):
         self.url = None
@@ -31,6 +32,7 @@ class ContentUploader(object):
         self.get_weight()
         self.upload()
         self.store()
+        time.sleep(60)
         self.create_thumbnail()
         self.set_thumbnail()
 
