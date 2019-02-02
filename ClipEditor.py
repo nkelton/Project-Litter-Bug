@@ -167,9 +167,9 @@ class ClipEditor(object):
         return self.final_clip
 
     def set_final_clip(self):
-        logger.warning('Setting final clip...')
+        logger.info('Setting final clip...')
         self.final_clip = concatenate_videoclips(self.clips, method='compose').resize((1280, 720))
 
     def update_final_clip(self, clip):
-        logger.warning('Updating final clip...')
+        logger.info('Updating final clip...')
         self.final_clip = clip
