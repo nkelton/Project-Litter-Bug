@@ -141,7 +141,7 @@ class ClipEditor(object):
     def add_intro(self):
         logger.info('Adding intro...')
         intro = self.generate_intro()
-        new_final_clip = concatenate_videoclips([intro, self.get_final_clip()], method='compose')
+        new_final_clip = concatenate_videoclips([intro, self.get_final_clip(), intro], method='compose')
         self.update_final_clip(new_final_clip)
 
     def generate_intro(self):
