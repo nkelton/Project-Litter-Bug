@@ -1,5 +1,7 @@
 import os
 import time
+from multiprocessing import Process
+
 import requests
 
 import config
@@ -23,11 +25,31 @@ class LitterBug(object):
         self.download_clip()
 
     def download_content(self):
+        def download_videos():
+            p = Process(target=self.ContentManager.VidDownloader.download())
+            p.start()
+            p.join(timeout=900)
+
+        def download_gifs():
+            p = Process(target=self.ContentManager.GifDownloader.download())
+            p.start()
+            p.join(timeout=900)
+
+        def download_pics():
+            p = Process(target=self.ContentManager.PicDownloader.download())
+            p.start()
+            p.join(timeout=900)
+
+        def download_sfx():
+            p = Process(target=self.ContentManager.SfxDownloader.download())
+            p.start()
+            p.join(timeout=900)
+
         self.set_status('Downloading content...')
-        self.ContentManager.VidDownloader.download()
-        self.ContentManager.GifDownloader.download()
-        self.ContentManager.PicDownloader.download()
-        self.ContentManager.SfxDownloader.download()
+        download_videos()
+        download_gifs()
+        download_pics()
+        download_sfx()
 
     def create_clip(self):
         logger.info('Creating clip...')
