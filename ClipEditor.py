@@ -1,6 +1,8 @@
 import glob
 import logging
 import random
+from multiprocessing import Queue, Process
+
 import moviepy.video.fx.all as vfx
 from moviepy.audio.AudioClip import CompositeAudioClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
@@ -136,12 +138,14 @@ class ClipEditor(object):
         self.set_final_clip()
         self.add_intro()
         logger.info('Writing final clip...')
-        self.final_clip.write_videofile(self.result_path, verbose=False, progress_bar=True)
+        p = Process(target=self.write_final_clip())
+        p.start()
+        p.join(timeout=7200)
 
     def add_intro(self):
         logger.info('Adding intro...')
         intro = self.generate_intro()
-        new_final_clip = concatenate_videoclips([intro, self.get_final_clip(), intro], method='compose')
+        new_final_clip = concatenate_videoclips([intro, self.get_final_clip()], method='compose')
         self.update_final_clip(new_final_clip)
 
     def generate_intro(self):
@@ -173,3 +177,6 @@ class ClipEditor(object):
     def update_final_clip(self, clip):
         logger.info('Updating final clip...')
         self.final_clip = clip
+
+    def write_final_clip(self):
+        self.final_clip.write_videofile(self.result_path, verbose=False)
