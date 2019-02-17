@@ -218,7 +218,7 @@ def download_sfx(litter_id, key, download_path, download_num):
     while i < int(download_num):
         try:
             logger.info('trying to get sound...')
-            response = client.get_sound(random.randint(0, 96451)).decode('utf-8')
+            response = json.loads(client.get_sound(random.randint(0, 96451)).content.decode('utf-8'))
             logger.info('got sound and the response is....response')
             logger.info(response)
             url = response['url']
