@@ -38,8 +38,7 @@ def downloader(url, download_path):
         progress = 0
 
         with open(download_path, 'wb') as f:
-            for data in tqdm(r.iter_content(block_size), total=total_bytes,
-                             unit='B', bar_format='{percentage:3.0f}%'):
+            for data in tqdm(r.iter_content(block_size), total=total_bytes, unit='B'):
                 f.write(data)
                 progress += 1
                 percent_downloaded = round((progress / total_bytes) * 100)
