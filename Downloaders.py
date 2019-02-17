@@ -1,33 +1,35 @@
 import math
 import random
 import time
+import subprocess
 from datetime import datetime, timedelta
 
 import freesound
 import giphy_client
-from pixabay import Image
 import requests
 from giphy_client.rest import ApiException
-
 from googleapiclient.discovery import build
 from pafy import pafy
+from pixabay import Image
 from tqdm import tqdm
 
 import config
+import utils
 
 logger = config.set_logger('Downloaders.py')
 
 
-class Downloader(object):
-    def __init__(self, key, download_path, download_num, id):
-        self.key = key
-        self.download_path = download_path
-        self.download_num = download_num
-        self.id = id
-        self.tags = []
+def store(litter_id, url, type):
+    logger.info('Storing media...')
+    end_point = config.BASE_URL + '/content/'
+    requests.post(end_point, json={
+        'litter_id': litter_id,
+        'url': url,
+        'type': type,
+    })
 
-    @staticmethod
-    def downloader(url, download_path):
+
+def downloader(url, download_path):
         logger.info('Downloading...')
         r = requests.get(url, stream=True)
         total_size = int(r.headers.get('content-length', 0))
@@ -53,43 +55,20 @@ class Downloader(object):
                     time.sleep(.1)
         f.close()
 
-    def generate_keyword(self):
-        logger.info('Generating keyword...')
-        word_url = 'https://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain'
-        response = requests.get(word_url)
-        words = response.content.splitlines()
-        word = words[random.randint(0, len(words) - 1)].decode('utf-8')
-        self.tags.append(word)
-        return word
 
-    def store(self, url, media):
-        logger.info('Storing media...')
-        end_point = self._url('/content/')
-        requests.post(end_point, json={
-            'litter_id': self.id,
-            'url': url,
-            'type': media,
-        })
-
-    @staticmethod
-    def _url(path):
-        return config.BASE_URL + path
-
-
-class VidDownloader(Downloader):
-    def __init__(self, key, download_path, download_num, id):
-        super(VidDownloader, self).__init__(key, download_path, download_num, id)
+class VidDownloader(object):
+    def __init__(self, id, download_num):
+        self.download_num = download_num
         self.interval_lst = []
+        self.id = id
+        self.tags = []
 
     def download(self):
         logger.info('Downloading videos...')
-
-        def url(video):
-            return 'https://www.youtube.com/watch?v=' + video.videoid
-
+        id_lst = self.get_vid_ids(self.download_num)
         used = []
-        id_lst = self.get_vid_ids()
         i = 0
+
         while i < self.download_num:
             index = random.randint(0, len(id_lst) - 1)
             if index not in used:
@@ -100,21 +79,23 @@ class VidDownloader(Downloader):
                 if 20 > duration.minute > 0:
                     interval = self.generate_interval(video, duration)
                     self.interval_lst.append(interval)
-                    video.getbest(preftype='mp4').download(self.download_path, quiet=True, meta=True,
-                                                           callback=self.download_handler)
-                    self.store(url(video), 'vid')
+                    video.getbest(preftype='mp4').download(config.VID_PATH, quiet=True,
+                                                           meta=True, callback=self.download_handler)
+                    store(self.id, 'https://www.youtube.com/watch?v=' + video.videoid, 'vid')
                     i += 1
 
-    def get_vid_ids(self):
+    def get_vid_ids(self, download_num):
+        youtube = build(config.YOUTUBE_API_SERVICE_NAME, config.YOUTUBE_API_VERSION,
+                        developerKey=config.YOUTUBE_API_KEY, cache_discovery=False)
         id_lst = []
-        youtube = build(config.YOUTUBE_API_SERVICE_NAME, config.YOUTUBE_API_VERSION, developerKey=self.key, cache_discovery=False)
 
-        while len(id_lst) != (self.download_num * 5):
-            search = self.generate_keyword()
+        while len(id_lst) != (download_num * 5):
+            search = utils.generate_keyword()
             search_response = youtube.search().list(q=search, part='id, snippet', type='video').execute()
             for result in search_response.get('items', []):
                 video_id = {'id': result['id']['videoId']}
                 id_lst.append(video_id)
+                self.tags.append(search)
         return id_lst
 
     def generate_interval(self, video, duration):
@@ -142,98 +123,109 @@ class VidDownloader(Downloader):
         percent_downloaded = round(int(ratio_downloaded * 100))
         if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
             config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-            end_point = config.BASE_URL + '/script/1/'
-            requests.patch(end_point, json={
-                'download': percent_downloaded,
-            })
+            task = {'download': percent_downloaded}
+            utils.update_script(task)
         else:
             return None
 
 
-class GifDownloader(Downloader):
-    def __init__(self, key, download_path, download_num, id):
-        super(GifDownloader, self).__init__(key, download_path, download_num, id)
+class GifDownloader(object):
+    def __init__(self, id, download_num):
+        self.download_num = download_num
+        self.id = id
+        self.tags = []
 
     def download(self):
         logger.info('Downloading gifs...')
-
-        def generate_rating():
-            choice = random.randint(0, 2)
-            if choice == 0:
-                return 'g'
-            elif choice == 1:
-                return 'pg'
-            else:
-                return 'pg-13'
-
+        download_count = random.randint(3, 9)
         api = giphy_client.DefaultApi()
         limit = 50
         offset = 0
-        rating = generate_rating()
+        rating = ['g', 'pg', 'pg-13']
         lang = 'en'
         fmt = 'json'
         i = 0
 
-        while i < self.download_num:
-            search = self.generate_keyword()
+        while i < download_count:
+            search = utils.generate_keyword()
             try:
-                response = api.stickers_search_get(self.key, search, limit=limit, offset=offset,
-                                                   rating=rating, lang=lang, fmt=fmt)
+                response = api.stickers_search_get(config.GIPHY_API_KEY, search, limit=limit, offset=offset,
+                                                   rating=rating[random.randint(0, 2)], lang=lang, fmt=fmt)
                 response_count = len(response.data)
                 if response_count:
                     index = random.randint(0, response_count - 1)
                     url = response.data[index].images.original.url
-                    gif_path = self.download_path + str(i) + '.gif'
-                    self.downloader(url, gif_path)
-                    self.store(url, 'gif')
+                    gif_path = config.GIF_PATH + str(i) + '.gif'
+                    cmd = ['runp', 'Downloaders.py', 'downloader:',
+                           'url=' + url,  'download_path=' + gif_path]
+                    p = subprocess.Popen(cmd)
+                    utils.wait_timeout(p, config.GIPHY_TIMEOUT)
+                    store(self.id, url, 'gif')
+                    self.tags.append(search)
                     i += 1
             except ApiException as e:
                 logger.error("Exception when calling DefaultApi->stickers_random_get: %s\n" % e)
 
 
-class PicDownloader(Downloader):
-    def __init__(self, key, download_path, download_num, id):
-        super(PicDownloader, self).__init__(key, download_path, download_num, id)
+class PicDownloader(object):
+    def __init__(self, id, download_num):
+        self.download_num = download_num
+        self.id = id
+        self.tags = []
 
     def download(self):
         logger.info('Downloading pictures...')
-
-        pix = Image(self.key)
+        pix = Image(config.PIXABAY_API_KEY)
         i = 0
+
         while i < self.download_num:
-            search = self.generate_keyword()
+            search = utils.generate_keyword()
             img_search = pix.search(q=search, page=1, per_page=30)
             hits = len(img_search['hits'])
 
             if hits:
                 index = random.randint(0, hits - 1)
                 url = img_search['hits'][index]['webformatURL']
-                pic_path = self.download_path + str(i) + '.jpg'
-                self.downloader(url, pic_path)
-                self.store(url, 'pic')
+                pic_path = config.PIC_PATH + str(i) + '.jpg'
+                cmd = ['runp', 'Downloaders.py', 'downloader:',
+                       'url=' + url, 'download_path=' + pic_path]
+                p = subprocess.Popen(cmd)
+                utils.wait_timeout(p, config.PIXABAY_TIMEOUT)
+                store(self.id, url, 'pic')
+                self.tags.append(search)
                 i += 1
-            time.sleep(1)
+        time.sleep(1)
 
 
-class SfxDownloader(Downloader):
-    def __init__(self, key, download_path, download_num, id):
-        super(SfxDownloader, self).__init__(key, download_path, download_num, id)
+class SfxDownloader(object):
+    def __init__(self, id, download_num):
+        self.id = id
+        self.tags = []
+        self.download_num = download_num
 
     def download(self):
-        logger.info('Downloading sfx...')
-        client = freesound.FreesoundClient()
-        client.set_token(self.key)
-        i = 0
+        cmd = ['runp', 'Downloaders.py', 'download_sfx:',
+               'id='+self.id, 'key='+config.GIPHY_API_KEY,
+               'download_path='+config.SFX_PATH, 'download_num='+str(self.download_num)]
+        p = subprocess.Popen(cmd)
+        utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
-        while i < self.download_num:
-            try:
-                response = client.get_sound(random.randint(0, 96451))
-                url = response.url
-                name = str(i) + '.mp3'
-                response.retrieve_preview(self.download_path, name=name)
-                self.store(url, 'sfx')
-                i += 1
-            except Exception as e:
-                logger.error('Exception occrured while downloading sfx...')
-                logger.error(e)
+
+def download_sfx(litter_id, key, download_path, download_num):
+    logger.info('Downloading sfx...')
+    client = freesound.FreesoundClient()
+    client.set_token(key)
+    i = 0
+
+    while i < download_num:
+        try:
+            response = client.get_sound(random.randint(0, 96451))
+            url = response.url
+            name = str(i) + '.mp3'
+            response.retrieve_preview(download_path, name=name)
+            store(litter_id, url, 'sfx')
+            i += 1
+        except Exception as e:
+            logger.error('Exception occrured while downloading sfx...')
+            logger.error(e)
 
