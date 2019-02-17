@@ -209,7 +209,13 @@ class SfxDownloader(object):
 
 
 def download_sfx(litter_id, key, download_path, download_num):
-    logger.info('Downloading...')
+    logger.info('Downloading from download_sfx...')
+    logger.info('--------------------------------------------')
+    logger.info('litter_id', litter_id)
+    logger.info('key', key)
+    logger.info('download_path', download_path)
+    logger.info('download_num', download_num)
+
     client = freesound.FreesoundClient()
     client.set_token(key)
     i = 0
