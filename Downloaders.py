@@ -202,7 +202,7 @@ class SfxDownloader(object):
         logger.info('Downloading sfx...')
         args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
         args = ','.join("{0}".format(arg) for arg in args_lst)
-        logger.info('@@@@@@@@@ARGS:', args)
+        logger.info('@@@@@@@@@ARGS:' + args)
         cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
         p = subprocess.Popen(cmd)
         utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
@@ -211,10 +211,10 @@ class SfxDownloader(object):
 def download_sfx(litter_id, key, download_path, download_num):
     logger.info('Downloading from download_sfx...')
     logger.info('--------------------------------------------')
-    logger.info('litter_id', litter_id)
-    logger.info('key', key)
-    logger.info('download_path', download_path)
-    logger.info('download_num', download_num)
+    logger.info('litter_id: ' + litter_id)
+    logger.info('key: ' + key)
+    logger.info('download_path:' + download_path)
+    logger.info('download_num:' + download_num)
 
     client = freesound.FreesoundClient()
     client.set_token(key)

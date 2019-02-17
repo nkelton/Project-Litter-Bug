@@ -19,7 +19,8 @@ logger = config.set_logger('ClipEditor.py')
 def string_to_list(lst_str):
     lst_str = lst_str.replace("*", ",")
     lst_str = ast.literal_eval(lst_str)
-    logger.info('lst_str:', lst_str, 'type:', type(lst_str))
+    logger.info('lst_str: ' + lst_str)
+    logger.info('type:' + type(lst_str))
     new_lst = []
 
     for n in lst_str:
@@ -39,10 +40,10 @@ def create(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst_str):
 
 class ClipEditor(object):
     def __init__(self, vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst):
-        self.vid_num = vid_num
-        self.gif_num = gif_num
-        self.pic_num = pic_num
-        self.sfx_num = sfx_num
+        self.vid_num = int(vid_num)
+        self.gif_num = int(gif_num)
+        self.pic_num = int(pic_num)
+        self.sfx_num = int(sfx_num)
         self.result_path = result_path
         self.interval_lst = interval_lst
 
