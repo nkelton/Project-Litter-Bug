@@ -44,6 +44,7 @@ class LitterBug(object):
 
     def download_content(self):
         self.set_status('Downloading content...')
+        logger.info('Downloading content...')
         self.vid_downloader.download()
         self.gif_downloader.download()
         self.pic_downloader.download()

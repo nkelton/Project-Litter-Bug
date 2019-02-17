@@ -1,0 +1,13 @@
+MANIFEST.in
+README.rst
+setup.py
+runp/__init__.py
+runp/runp.py
+runp.egg-info/PKG-INFO
+runp.egg-info/SOURCES.txt
+runp.egg-info/dependency_links.txt
+runp.egg-info/entry_points.txt
+runp.egg-info/top_level.txt
+tests/__init__.py
+tests/test.py
+tests/testfile.py

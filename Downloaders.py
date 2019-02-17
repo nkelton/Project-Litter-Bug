@@ -168,7 +168,6 @@ class PicDownloader(object):
         self.id = id
         self.tags = []
 
-    # TODO commands have to be rewritten to comply with example in untitled1
     def download(self):
         logger.info('Downloading pics...')
         pix = Image(config.PIXABAY_API_KEY)
@@ -203,6 +202,7 @@ class SfxDownloader(object):
         logger.info('Downloading sfx...')
         args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
         args = ','.join("{0}".format(arg) for arg in args_lst)
+        logger.info('@@@@@@@@@ARGS:', args)
         cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
         p = subprocess.Popen(cmd)
         utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
