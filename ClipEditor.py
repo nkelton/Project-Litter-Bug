@@ -19,7 +19,13 @@ logger = config.set_logger('ClipEditor.py')
 def string_to_list(lst_str):
     lst_str = lst_str.replace("*", ",")
     lst_str = ast.literal_eval(lst_str)
-    new_lst = [n.strip() for n in lst_str]
+    logger.info('lst_str:', lst_str, 'type:', type(lst_str))
+    new_lst = []
+
+    for n in lst_str:
+        new_lst.append(n)
+
+    logger.info('new_lst:', new_lst)
     return new_lst
 
 
