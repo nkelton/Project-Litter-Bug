@@ -210,15 +210,16 @@ class SfxDownloader(object):
 
 
 def download_sfx(litter_id, key, download_path, download_num):
+    logger.info('Downloading from download_sfx...')
     client = freesound.FreesoundClient()
     client.set_token(key)
     i = 0
 
     while i < int(download_num):
         try:
-            response = client.get_sound(random.randint(0, 96451))
-            response = response.json_dict
-            logger.info('response')
+            logger.info('trying to get sound...')
+            response = client.get_sound(random.randint(0, 96451)).decode('utf-8')
+            logger.info('got sound and the response is....response')
             logger.info(response)
             url = response['url']
             name = str(i) + '.mp3'
