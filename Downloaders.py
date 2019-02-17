@@ -203,13 +203,13 @@ class SfxDownloader(object):
         logger.info('Downloading sfx...')
         args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
         args = ','.join("{0}".format(arg) for arg in args_lst)
+        logger.info('@@@@@@@@@ARGS:' + args)
         cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
         p = subprocess.Popen(cmd)
         utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
 
 def download_sfx(litter_id, key, download_path, download_num):
-    logger.info('Downloading from download_sfx...')
     client = freesound.FreesoundClient()
     client.set_token(key)
     i = 0
@@ -217,7 +217,7 @@ def download_sfx(litter_id, key, download_path, download_num):
     while i < int(download_num):
         try:
             response = client.get_sound(random.randint(0, 96451))
-            url = response['url']
+            url = response.url
             name = str(i) + '.mp3'
             response.retrieve_preview(download_path, name=name)
             store(litter_id, url, 'sfx')
