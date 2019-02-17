@@ -33,7 +33,7 @@ class LitterBug(object):
 
     def generate_id(self):
         id = random.getrandbits(63)
-        task = {'litter_id': self.id}
+        task = {'litter_id': id}
         utils.update_script(task)
         return id
 
