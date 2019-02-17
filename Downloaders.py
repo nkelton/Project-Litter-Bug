@@ -214,7 +214,7 @@ def download_sfx(litter_id, key, download_path, download_num):
     client.set_token(key)
     i = 0
 
-    while i < download_num:
+    while i < int(download_num):
         try:
             response = client.get_sound(random.randint(0, 96451))
             url = response.url
