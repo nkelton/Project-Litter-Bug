@@ -227,4 +227,3 @@ def download_sfx(litter_id, key, download_path, download_num):
         except Exception as e:
             logger.error('Exception occrured while downloading sfx...')
             logger.error(e)
-

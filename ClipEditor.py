@@ -2,7 +2,6 @@ import ast
 import glob
 import logging
 import random
-from multiprocessing import Queue, Process
 
 import moviepy.video.fx.all as vfx
 from moviepy.audio.AudioClip import CompositeAudioClip
