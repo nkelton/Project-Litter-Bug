@@ -133,7 +133,6 @@ class GifDownloader(object):
 
     def download(self):
         logger.info('Downloading gifs...')
-        download_count = random.randint(3, 9)
         api = giphy_client.DefaultApi()
         limit = 50
         offset = 0
@@ -142,7 +141,7 @@ class GifDownloader(object):
         fmt = 'json'
         i = 0
 
-        while i < download_count:
+        while i < self.download_num:
             search = utils.generate_keyword()
             try:
                 response = api.stickers_search_get(config.GIPHY_API_KEY, search, limit=limit, offset=offset,
