@@ -1,3 +1,4 @@
+import json
 import math
 import random
 import time
@@ -223,7 +224,7 @@ def download_sfx(litter_id, key, download_path, download_num):
     while i < int(download_num):
         try:
             response = client.get_sound(random.randint(0, 96451))
-            url = response.url
+            url = json.loads(response.url.decode('utf-8'))
             name = str(i) + '.mp3'
             response.retrieve_preview(download_path, name=name)
             store(litter_id, url, 'sfx')
