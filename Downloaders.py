@@ -143,7 +143,6 @@ class GifDownloader(object):
         fmt = 'json'
         i = 0
 
-        #TODO commands have to be rewritten to comply with example in untitled1
         while i < download_count:
             search = utils.generate_keyword()
             try:
@@ -154,8 +153,8 @@ class GifDownloader(object):
                     index = random.randint(0, response_count - 1)
                     url = response.data[index].images.original.url
                     gif_path = config.GIF_PATH + str(i) + '.gif'
-                    cmd = ['runp', 'Downloaders.py', 'downloader:',
-                           'url=' + url,  'download_path=' + gif_path]
+                    args = ','.join("{0}".format(arg) for arg in [url, gif_path])
+                    cmd = ['runp', 'Downloaders.py', 'downloader:'+args]
                     p = subprocess.Popen(cmd)
                     utils.wait_timeout(p, config.GIPHY_TIMEOUT)
                     store(self.id, url, 'gif')
@@ -173,7 +172,7 @@ class PicDownloader(object):
 
     # TODO commands have to be rewritten to comply with example in untitled1
     def download(self):
-        logger.info('Downloading pictures...')
+        logger.info('Downloading pics...')
         pix = Image(config.PIXABAY_API_KEY)
         i = 0
 
@@ -186,8 +185,8 @@ class PicDownloader(object):
                 index = random.randint(0, hits - 1)
                 url = img_search['hits'][index]['webformatURL']
                 pic_path = config.PIC_PATH + str(i) + '.jpg'
-                cmd = ['runp', 'Downloaders.py', 'downloader:',
-                       'url=' + url, 'download_path=' + pic_path]
+                args = ','.join("{0}".format(arg) for arg in [url, pic_path])
+                cmd = ['runp', 'Downloaders.py', 'downloader:'+args]
                 p = subprocess.Popen(cmd)
                 utils.wait_timeout(p, config.PIXABAY_TIMEOUT)
                 store(self.id, url, 'pic')
@@ -202,17 +201,17 @@ class SfxDownloader(object):
         self.tags = []
         self.download_num = download_num
 
-    #TODO commands have to be rewritten to comply with example in untitled1
     def download(self):
-        cmd = ['runp', 'Downloaders.py', 'download_sfx:',
-               'id='+self.id, 'key='+config.GIPHY_API_KEY,
-               'download_path='+config.SFX_PATH, 'download_num='+str(self.download_num)]
+        logger.info('Downloading sfx...')
+        args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
+        args = ','.join("{0}".format(arg) for arg in args_lst)
+        cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
         p = subprocess.Popen(cmd)
         utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
 
 def download_sfx(litter_id, key, download_path, download_num):
-    logger.info('Downloading sfx...')
+    logger.info('Downloading...')
     client = freesound.FreesoundClient()
     client.set_token(key)
     i = 0
