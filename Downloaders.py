@@ -48,10 +48,8 @@ def downloader(url, download_path):
                         config.GLOBAL_DOWNLOAD_TRACKER = 100
                     else:
                         config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-                    end_point = config.BASE_URL + '/script/1/'
-                    requests.patch(end_point, json={
-                        'download': config.GLOBAL_DOWNLOAD_TRACKER,
-                    })
+                        task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
+                        utils.update_script(task)
                     time.sleep(.1)
         f.close()
 
@@ -88,7 +86,6 @@ class VidDownloader(object):
         youtube = build(config.YOUTUBE_API_SERVICE_NAME, config.YOUTUBE_API_VERSION,
                         developerKey=config.YOUTUBE_API_KEY, cache_discovery=False)
         id_lst = []
-
         while len(id_lst) != (download_num * 5):
             search = utils.generate_keyword()
             search_response = youtube.search().list(q=search, part='id, snippet', type='video').execute()
@@ -146,6 +143,7 @@ class GifDownloader(object):
         fmt = 'json'
         i = 0
 
+        #TODO commands have to be rewritten to comply with example in untitled1
         while i < download_count:
             search = utils.generate_keyword()
             try:
@@ -173,6 +171,7 @@ class PicDownloader(object):
         self.id = id
         self.tags = []
 
+    # TODO commands have to be rewritten to comply with example in untitled1
     def download(self):
         logger.info('Downloading pictures...')
         pix = Image(config.PIXABAY_API_KEY)
@@ -203,6 +202,7 @@ class SfxDownloader(object):
         self.tags = []
         self.download_num = download_num
 
+    #TODO commands have to be rewritten to comply with example in untitled1
     def download(self):
         cmd = ['runp', 'Downloaders.py', 'download_sfx:',
                'id='+self.id, 'key='+config.GIPHY_API_KEY,

@@ -1,6 +1,8 @@
 import random
 import time
 import subprocess
+from string import join
+
 import Downloaders
 import config
 import utils
@@ -41,7 +43,6 @@ class LitterBug(object):
         logger.info('Generating clip...')
         self.download_content()
         self.create_clip()
-        self.download_clip()
 
     def download_content(self):
         self.set_status('Downloading content...')
@@ -50,39 +51,19 @@ class LitterBug(object):
         self.picDownloader.download()
         self.sfxDownloader.download()
 
-    def download(self, content_type, timeout):
-        if type == 'VID':
-            self.vidDownloader.download()
-        else:
-            if content_type == 'GIF':
-                cmd = ['runp', 'Downloaders.py', 'download_gif:',
-                       'litter_id=' + str(self.id), 'key=' + config.GIPHY_API_KEY,
-                       'download_path=' + config.GIF_PATH]
-            elif content_type == 'PIC':
-                cmd = ['runp', 'Downloaders.py', 'download_pic:',
-                       'litter_id=' + str(self.id), 'key=' + config.PIXABAY_API_KEY,
-                       'download_path=' + config.PIC_PATH]
-            elif content_type == 'SFX':
-                cmd = ['runp', 'Downloaders.py', 'download_sfx:',
-                       'litter_id=' + str(self.id), 'key=' + config.FREESOUND_API_KEY,
-                       'download_path=' + config.SFX_PATH]
-            else:
-                cmd = None
-
-            if cmd is not None:
-                p = subprocess.Popen(cmd)
-                utils.wait_timeout(p, timeout)
-
     def create_clip(self):
+        self.set_status('Generating content...')
         logger.info('Creating clip...')
-        self.set_status('Randomizing content...')
-        self.ClipEditor.set_interval_lst(self.vidDownloader.interval_lst)
-        self.ClipEditor.create_clip()
+        str_lst = str(self.vidDownloader.interval_lst)
+        interval_lst = str_lst.replace(",", "*")
 
-    def download_clip(self):
-        logger.info('Downloading clip...')
-        self.set_status('Downloading newly generated content...')
-        self.ClipEditor.download_result()
+        args_lst = [str(self.vid_num), str(self.gif_num), str(self.pic_num),
+                    str(self.sfx_num), self.result_path, interval_lst]
+        args = ','.join("{0}".format(arg) for arg in args_lst)
+
+        cmd = ['runp', 'ClipEditor.py', 'create:'+args]
+        p = subprocess.Popen(cmd)
+        utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
     def upload_clip(self):
         logger.info('Uploading clip...')

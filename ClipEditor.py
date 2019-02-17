@@ -1,3 +1,4 @@
+import ast
 import glob
 import logging
 import random
@@ -11,21 +12,37 @@ from moviepy.video.VideoClip import ImageClip, ColorClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
 import config
+import utils
 
 logger = config.set_logger('ClipEditor.py')
 
 
+def string_to_list(lst_str):
+    lst_str = lst_str.replace("*", ",")[:-1]
+    lst_str = ast.literal_eval(lst_str)
+    new_lst = [n.strip() for n in lst_str]
+    return new_lst
+
+
+def create(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst_str):
+    logger.info('Creating clip...')
+    interval_lst = string_to_list(interval_lst_str)
+    clip_editor = ClipEditor(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst)
+    clip_editor.create_clip()
+    clip_editor.download()
+
+
 class ClipEditor(object):
-    def __init__(self, vid_num, gif_num, pic_num, sfx_num, result_path):
+    def __init__(self, vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst):
         self.vid_num = vid_num
         self.gif_num = gif_num
         self.pic_num = pic_num
         self.sfx_num = sfx_num
         self.result_path = result_path
-        
+        self.interval_lst = interval_lst
+
         self.final_clip = None
         self.clips = []
-        self.interval_lst = []
 
     def create_clip(self):
         logger.info('Creating clip...')
@@ -133,14 +150,13 @@ class ClipEditor(object):
         y_size = random.randint(100, clip.h)
         return x_pos, y_pos, x_size, y_size
 
-    def download_result(self):
+    def download(self):
         logger.info('Downloading result...')
+        task = {'status': 'Downloading newly generated content...'}
+        utils.update_script(task)
         self.set_final_clip()
         self.add_intro()
-        logger.info('Writing final clip...')
-        p = Process(target=self.write_final_clip())
-        p.start()
-        p.join(timeout=7200)
+        self.write_final_clip()
 
     def add_intro(self):
         logger.info('Adding intro...')
@@ -148,7 +164,8 @@ class ClipEditor(object):
         new_final_clip = concatenate_videoclips([intro, self.get_final_clip()], method='compose')
         self.update_final_clip(new_final_clip)
 
-    def generate_intro(self):
+    @staticmethod
+    def generate_intro():
         logger.info('Generating intro...')
         color = (255, 255, 255)
         size = (1280, 720)
@@ -179,4 +196,5 @@ class ClipEditor(object):
         self.final_clip = clip
 
     def write_final_clip(self):
+        logger.info('Writing final clip...')
         self.final_clip.write_videofile(self.result_path, verbose=False)
