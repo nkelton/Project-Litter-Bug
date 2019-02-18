@@ -201,11 +201,12 @@ class SfxDownloader(object):
 
     def download(self):
         logger.info('Downloading sfx...')
-        args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
-        args = ','.join("{0}".format(arg) for arg in args_lst)
-        cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
-        p = subprocess.Popen(cmd)
-        utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
+        #args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
+        #args = ','.join("{0}".format(arg) for arg in args_lst)
+        download_sfx(self.id, config.GIPHY_API_KEY, config.SFX_PATH, self.download_num)
+        #cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
+        #p = subprocess.Popen(cmd)
+        #utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
 
 def download_sfx(litter_id, key, download_path, download_num):
