@@ -31,27 +31,27 @@ def store(litter_id, url, type):
 
 
 def downloader(url, download_path):
-        logger.info('Downloading...')
-        r = requests.get(url, stream=True)
-        total_size = int(r.headers.get('content-length', 0))
-        block_size = 1024
-        total_bytes = math.ceil(total_size // block_size)
-        progress = 0
+    logger.info('Downloading...')
+    r = requests.get(url, stream=True)
+    total_size = int(r.headers.get('content-length', 0))
+    block_size = 1024
+    total_bytes = math.ceil(total_size // block_size)
+    progress = 0
 
-        with open(download_path, 'wb') as f:
-            for data in tqdm(r.iter_content(block_size), total=total_bytes, unit='B'):
-                f.write(data)
-                progress += 1
-                percent_downloaded = round((progress / total_bytes) * 100)
-                if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
-                    if percent_downloaded > 100:
-                        config.GLOBAL_DOWNLOAD_TRACKER = 100
-                    else:
-                        config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-                        task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
-                        utils.update_script(task)
-                    time.sleep(.1)
-        f.close()
+    with open(download_path, 'wb') as f:
+        for data in tqdm(r.iter_content(block_size), total=total_bytes, unit='B'):
+            f.write(data)
+            progress += 1
+            percent_downloaded = round((progress / total_bytes) * 100)
+            if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
+                if percent_downloaded > 100:
+                    config.GLOBAL_DOWNLOAD_TRACKER = 100
+                else:
+                    config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
+                    task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
+                    utils.update_script(task)
+                time.sleep(.1)
+    f.close()
 
 
 class VidDownloader(object):
@@ -153,7 +153,7 @@ class GifDownloader(object):
                     url = response.data[index].images.original.url
                     gif_path = config.GIF_PATH + str(i) + '.gif'
                     args = ','.join("{0}".format(arg) for arg in [url, gif_path])
-                    cmd = ['runp', 'Downloaders.py', 'downloader:'+args]
+                    cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                     p = subprocess.Popen(cmd)
                     utils.wait_timeout(p, config.GIPHY_TIMEOUT)
                     store(self.id, url, 'gif')
@@ -184,7 +184,7 @@ class PicDownloader(object):
                 url = img_search['hits'][index]['webformatURL']
                 pic_path = config.PIC_PATH + str(i) + '.jpg'
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
-                cmd = ['runp', 'Downloaders.py', 'downloader:'+args]
+                cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
                 utils.wait_timeout(p, config.PIXABAY_TIMEOUT)
                 store(self.id, url, 'pic')
@@ -201,28 +201,28 @@ class SfxDownloader(object):
 
     def download(self):
         logger.info('Downloading sfx...')
-        #args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
-        #args = ','.join("{0}".format(arg) for arg in args_lst)
-        download_sfx(self.id, config.GIPHY_API_KEY, config.SFX_PATH, self.download_num)
+        # args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
+        # args = ','.join("{0}".format(arg) for arg in args_lst)
+        self.download_sfx(self.id, config.GIPHY_API_KEY, config.SFX_PATH, self.download_num)
         logger.info('download_sfx finished...')
-        #cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
-        #p = subprocess.Popen(cmd)
-        #utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
+        # cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
+        # p = subprocess.Popen(cmd)
+        # utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
+    @staticmethod
+    def download_sfx(litter_id, key, download_path, download_num):
+        client = freesound.FreesoundClient()
+        client.set_token(key)
+        i = 0
 
-def download_sfx(litter_id, key, download_path, download_num):
-    client = freesound.FreesoundClient()
-    client.set_token(key)
-    i = 0
-
-    while i < int(download_num):
-        try:
-            response = client.get_sound(random.randint(0, 96451))
-            url = response.url
-            name = str(i) + '.mp3'
-            response.retrieve_preview(download_path, name=name)
-            store(litter_id, url, 'sfx')
-            i += 1
-        except Exception as e:
-            logger.error('Exception occrured while downloading sfx...')
-            logger.error(e)
+        while i < int(download_num):
+            try:
+                response = client.get_sound(random.randint(0, 96451))
+                url = response.url
+                name = str(i) + '.mp3'
+                response.retrieve_preview(download_path, name=name)
+                store(litter_id, url, 'sfx')
+                i += 1
+            except Exception as e:
+                logger.error('Exception occrured while downloading sfx...')
+                logger.error(e)
