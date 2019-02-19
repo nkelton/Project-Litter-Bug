@@ -202,27 +202,32 @@ class SfxDownloader(object):
     def download(self):
         logger.info('Downloading sfx...')
         # args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
-        # args = ','.join("{0}".format(arg) for arg in args_lst)
-        self.download_sfx(self.id, config.GIPHY_API_KEY, config.SFX_PATH, self.download_num)
+        args = ','.join("{0}".format(arg) for arg in [str(self.id), str(self.download_num)])
+        download_sfx(self.id, self.download_num)
         logger.info('download_sfx finished...')
-        # cmd = ['runp', 'Downloaders.py', 'download_sfx:'+args]
-        # p = subprocess.Popen(cmd)
-        # utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
+        cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
+        p = subprocess.Popen(cmd)
+        utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
-    @staticmethod
-    def download_sfx(litter_id, key, download_path, download_num):
-        client = freesound.FreesoundClient()
-        client.set_token(key)
-        i = 0
 
-        while i < int(download_num):
-            try:
-                response = client.get_sound(random.randint(0, 96451))
-                url = response.url
-                name = str(i) + '.mp3'
-                response.retrieve_preview(download_path, name=name)
-                store(litter_id, url, 'sfx')
-                i += 1
-            except Exception as e:
-                logger.error('Exception occrured while downloading sfx...')
-                logger.error(e)
+def download_sfx(litter_id, download_num):
+    logger.info('Inside download_sfx')
+    client = freesound.FreesoundClient()
+    client.set_token(config.FREESOUND_API_KEY)
+    i = 0
+
+    while i < int(download_num):
+        try:
+            logger.info('Attempting to get sound...')
+            response = client.get_sound(random.randint(0, 96451))
+            url = response.url
+            name = str(i) + '.mp3'
+
+            logger.info('Downloading sfx...')
+            response.retrieve_preview(config.SFX_PATH, name=name)
+            store(litter_id, url, 'sfx')
+            i += 1
+        except Exception as e:
+            logger.error('Exception occrured while downloading sfx...')
+            logger.error(e)
+
