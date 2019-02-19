@@ -201,7 +201,6 @@ class SfxDownloader(object):
 
     def download(self):
         logger.info('Downloading sfx...')
-        # args_lst = [str(self.id), config.GIPHY_API_KEY, config.SFX_PATH, str(self.download_num)]
         args = ','.join("{0}".format(arg) for arg in [str(self.id), str(self.download_num)])
         download_sfx(self.id, self.download_num)
         logger.info('download_sfx finished...')
