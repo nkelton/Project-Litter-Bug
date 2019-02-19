@@ -202,27 +202,21 @@ class SfxDownloader(object):
     def download(self):
         logger.info('Downloading sfx...')
         args = ','.join("{0}".format(arg) for arg in [str(self.id), str(self.download_num)])
-        download_sfx(self.id, self.download_num)
-        logger.info('download_sfx finished...')
         cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
         p = subprocess.Popen(cmd)
         utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
 
 def download_sfx(litter_id, download_num):
-    logger.info('Inside download_sfx')
     client = freesound.FreesoundClient()
     client.set_token(config.FREESOUND_API_KEY)
     i = 0
 
     while i < int(download_num):
         try:
-            logger.info('Attempting to get sound...')
             response = client.get_sound(random.randint(0, 96451))
             url = response.url
             name = str(i) + '.mp3'
-
-            logger.info('Downloading sfx...')
             response.retrieve_preview(config.SFX_PATH, name=name)
             store(litter_id, url, 'sfx')
             i += 1
