@@ -1,4 +1,3 @@
-import json
 import math
 import random
 import time
@@ -207,6 +206,7 @@ class SfxDownloader(object):
         utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
 
+# TODO search by randomly generated word
 def download_sfx(litter_id, download_num):
     client = freesound.FreesoundClient()
     client.set_token(config.FREESOUND_API_KEY)
@@ -214,13 +214,14 @@ def download_sfx(litter_id, download_num):
 
     while i < int(download_num):
         try:
+            logger.info('Attempting to get sound...')
             response = client.get_sound(random.randint(0, 96451))
             url = response.url
             name = str(i) + '.mp3'
+            logger.info('Attempting to retrieve preview...')
             response.retrieve_preview(config.SFX_PATH, name=name)
             store(litter_id, url, 'sfx')
             i += 1
         except Exception as e:
             logger.error('Exception occrured while downloading sfx...')
             logger.error(e)
-
