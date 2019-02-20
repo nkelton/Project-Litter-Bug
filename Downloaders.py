@@ -22,11 +22,13 @@ logger = config.set_logger('Downloaders.py')
 def store(litter_id, url, type):
     logger.info('Storing media...')
     end_point = config.BASE_URL + '/content/'
-    requests.post(end_point, json={
+    response = requests.post(end_point, json={
         'litter_id': litter_id,
         'url': url,
         'type': type,
     })
+    logger.info('Storing call returned: ' + str(response.status_code))
+    logger.info('Reason: ' + str(response.reason))
 
 
 def downloader(url, download_path):
@@ -53,6 +55,37 @@ def downloader(url, download_path):
     f.close()
 
 
+def generate_interval(self, video, duration):
+    cuts = [3, 5, 7, 10, 12]
+    start_minute = random.randint(0, duration.minute - 1)
+    start_second = random.randint(0, 59)
+    interval = random.choice(cuts)
+    return self.valid_interval(video.title, duration, start_minute, start_second, interval)
+
+
+def valid_interval(title, duration, minute, second, interval):
+    time_string = '0:' + str(minute) + ':' + str(second)
+    start = datetime.strptime(time_string, '%H:%M:%S')
+    end = start + timedelta(0, interval)
+
+    # verify we are bounded by the video duration
+    if end > duration:
+        end = start - timedelta(0, interval)
+        return title, end.strftime('%H:%M:%S'), start.strftime('%H:%M:%S')
+    else:
+        return title, start.strftime('%H:%M:%S'), end.strftime('%H:%M:%S')
+
+
+def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
+    percent_downloaded = round(int(ratio_downloaded * 100))
+    if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
+        config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
+        task = {'download': percent_downloaded}
+        utils.update_script(task)
+    else:
+        return None
+
+
 class VidDownloader(object):
     def __init__(self, id, download_num):
         self.download_num = download_num
@@ -70,15 +103,22 @@ class VidDownloader(object):
             index = random.randint(0, len(id_lst) - 1)
             if index not in used:
                 used.append(index)
-                video = pafy.new(id_lst[index]['id'])
+                """
+                START OF SUB PROCESS
+                """
+                video_id = id_lst[index]['id']
+
+                video = pafy.new(video_id)
                 duration = datetime.strptime(video.duration, '%H:%M:%S')
 
                 if 20 > duration.minute > 0:
-                    interval = self.generate_interval(video, duration)
+                    interval = generate_interval(video, duration)
                     self.interval_lst.append(interval)
-                    video.getbest(preftype='mp4').download(config.VID_PATH, quiet=True,
-                                                           meta=True, callback=self.download_handler)
-                    store(self.id, 'https://www.youtube.com/watch?v=' + video.videoid, 'vid')
+                    video.getbest(preftype='mp4').download(config.VID_PATH, quiet=True, meta=True, callback=download_handler)
+                    store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
+                    """
+                    END OF SUB PROCESS 
+                    """
                     i += 1
 
     def get_vid_ids(self, download_num):
@@ -93,36 +133,6 @@ class VidDownloader(object):
                 id_lst.append(video_id)
                 self.tags.append(search)
         return id_lst
-
-    def generate_interval(self, video, duration):
-        cuts = [3, 5, 7, 10, 12]
-        start_minute = random.randint(0, duration.minute - 1)
-        start_second = random.randint(0, 59)
-        interval = random.choice(cuts)
-        return self.valid_interval(video.title, duration, start_minute, start_second, interval)
-
-    @staticmethod
-    def valid_interval(title, duration, minute, second, interval):
-        time_string = '0:' + str(minute) + ':' + str(second)
-        start = datetime.strptime(time_string, '%H:%M:%S')
-        end = start + timedelta(0, interval)
-
-        # verify we are bounded by the video duration
-        if end > duration:
-            end = start - timedelta(0, interval)
-            return title, end.strftime('%H:%M:%S'), start.strftime('%H:%M:%S')
-        else:
-            return title, start.strftime('%H:%M:%S'), end.strftime('%H:%M:%S')
-
-    @staticmethod
-    def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
-        percent_downloaded = round(int(ratio_downloaded * 100))
-        if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
-            config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-            task = {'download': percent_downloaded}
-            utils.update_script(task)
-        else:
-            return None
 
 
 class GifDownloader(object):
