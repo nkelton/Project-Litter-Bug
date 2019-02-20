@@ -55,12 +55,12 @@ def downloader(url, download_path):
     f.close()
 
 
-def generate_interval(self, video, duration):
+def generate_interval(video, duration):
     cuts = [3, 5, 7, 10, 12]
     start_minute = random.randint(0, duration.minute - 1)
     start_second = random.randint(0, 59)
     interval = random.choice(cuts)
-    return self.valid_interval(video.title, duration, start_minute, start_second, interval)
+    return valid_interval(video.title, duration, start_minute, start_second, interval)
 
 
 def valid_interval(title, duration, minute, second, interval):
