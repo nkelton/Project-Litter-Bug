@@ -41,7 +41,7 @@ def generate_keyword():
     return word
 
 
-#TODO
+#TODO implement dynamic timeout so that it allows more time for processes that are succeeding and less time for those that are not
 def wait_timeout(proc, seconds):
     """Wait for a process to finish, or raise exception after timeout"""
     start = time.time()

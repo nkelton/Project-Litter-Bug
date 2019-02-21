@@ -51,7 +51,7 @@ class LitterBug(object):
         self.sfx_downloader.download()
 
     def create_clip(self):
-        self.set_status('Generating content...')
+        self.set_status('Creating new content...')
         logger.info('Creating clip...')
         str_lst = str(self.vid_downloader.interval_lst)
         interval_lst = str_lst.replace(",", "*")
@@ -66,7 +66,7 @@ class LitterBug(object):
 
     def upload_clip(self):
         logger.info('Uploading clip...')
-        self.set_status('Uploading newly generated content...')
+        self.set_status('Uploading new content...')
         time.sleep(5)
         self.retrieve_tags()
         self.content_uploader.set_tags(self.tags)
