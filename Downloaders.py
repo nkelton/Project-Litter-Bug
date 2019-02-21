@@ -78,6 +78,7 @@ def valid_interval(title, duration, minute, second, interval):
 
 
 def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
+    logger.info('Handling download...')
     percent_downloaded = round(int(ratio_downloaded * 100))
     if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
         config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
@@ -207,6 +208,7 @@ class PicDownloader(object):
                     time.sleep(.5)
 
 
+# TODO account for not incrementing when download times out
 class SfxDownloader(object):
     def __init__(self, id, download_num):
         self.id = id
