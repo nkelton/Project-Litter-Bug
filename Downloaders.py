@@ -87,7 +87,7 @@ def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downlo
 
 
 def download_video(video_id):
-    logger('Inside download_video...')
+    logger.info('Inside download_video...')
     pafy.new(video_id).getbest(preftype='mp4')\
         .download(config.VID_PATH, quiet=True,  meta=True, callback=download_handler)
 
