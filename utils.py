@@ -42,6 +42,7 @@ def generate_keyword():
 
 
 def get_current_download_value():
+    logger.info('Getting download value...')
     url = config.BASE_URL + '/script/1/'
     response = requests.get(url)
     script_data = response.json()
@@ -49,15 +50,19 @@ def get_current_download_value():
 
 
 def recalc_wait_time(end, adjust):
+    logger.info('Recalculating wait time...')
     current_download = get_current_download_value()
     if config.GLOBAL_DOWNLOAD_TRACKER != current_download:
+        logger.info('Adding time...')
         return end + adjust
     else:
+        logger.info('Removing time...')
         return end - adjust
 
 
 def wait_timeout(proc, seconds, adjust):
     """Wait for a process to finish, or raise exception after timeout"""
+    logger.info('Waiting or timing out...')
     start = time.time()
     end = start + seconds
     interval = min(seconds / 1000.0, .25)
@@ -67,7 +72,7 @@ def wait_timeout(proc, seconds, adjust):
         if result is not None:
             return result
         if time.time() >= end:
-            logger.warning('Process has timed out')
+            logger.warning('Process has timed out...')
             proc.kill()
             return None
         if time.time() < end:
