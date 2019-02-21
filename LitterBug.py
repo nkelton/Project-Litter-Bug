@@ -20,6 +20,11 @@ class LitterBug(object):
         self.pic_num = random.randint(3, 9)
         self.sfx_num = random.randint(3, 9)
 
+        logger.info('Vid num: ' + str(self.vid_num))
+        logger.info('Gif num: ' + str(self.gif_num))
+        logger.info('Pic num: ' + str(self.pic_num))
+        logger.info('Sfx num: ' + str(self.sfx_num))
+
         self.result_path = config.RESULT_PATH + self.name
         self.tags = None
 
