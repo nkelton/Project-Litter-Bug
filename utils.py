@@ -51,6 +51,7 @@ def get_current_download_value():
 
 def recalc_wait_time(end, adjust):
     logger.info('Recalculating wait time...')
+    logger.info('Current download tracker value: ' + str(config.GLOBAL_DOWNLOAD_TRACKER))
     current_download = get_current_download_value()
     if config.GLOBAL_DOWNLOAD_TRACKER != current_download:
         logger.info('Adding time...')
