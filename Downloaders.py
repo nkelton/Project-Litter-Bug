@@ -224,17 +224,16 @@ class SfxDownloader(object):
 
 # TODO search by randomly generated word
 def download_sfx(litter_id, download_num):
+    logger.info('Inside download_sfx...')
     client = freesound.FreesoundClient()
     client.set_token(config.FREESOUND_API_KEY)
     i = 0
 
     while i < int(download_num):
         try:
-            logger.info('Attempting to get sound...')
             response = client.get_sound(random.randint(0, 96451))
             url = response.url
             name = str(i) + '.mp3'
-            logger.info('Attempting to retrieve preview...')
             response.retrieve_preview(config.SFX_PATH, name=name)
             store(litter_id, url, 'sfx')
             i += 1
