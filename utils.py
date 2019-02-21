@@ -49,12 +49,12 @@ def get_current_download_value():
     return script_data['download']
 
 
-def recalc_wait_time(tracker, end, adjust):
+def recalc_wait_time(download_tracker, end, adjust):
     logger.info('Recalculating wait time...')
-    logger.info('Current download tracker value: ' + str(config.TIMEOUT_DOWNLOAD_TRACKER))
+    logger.info('Current download tracker value: ' + str(download_tracker))
 
     current_download = get_current_download_value()
-    if config.TIMEOUT_DOWNLOAD_TRACKER != current_download:
+    if download_tracker != current_download:
         logger.info('Adding time...')
         end = end + adjust
     else:
