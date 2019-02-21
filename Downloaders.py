@@ -56,6 +56,7 @@ def downloader(url, download_path):
 
 
 def generate_interval(video, duration):
+    logger.info('Generating interval')
     cuts = [3, 5, 7, 10, 12]
     start_minute = random.randint(0, duration.minute - 1)
     start_second = random.randint(0, 59)
@@ -64,11 +65,11 @@ def generate_interval(video, duration):
 
 
 def valid_interval(title, duration, minute, second, interval):
+    logger.info('Validating interval...')
     time_string = '0:' + str(minute) + ':' + str(second)
     start = datetime.strptime(time_string, '%H:%M:%S')
     end = start + timedelta(0, interval)
 
-    # verify we are bounded by the video duration
     if end > duration:
         end = start - timedelta(0, interval)
         return title, end.strftime('%H:%M:%S'), start.strftime('%H:%M:%S')
@@ -82,8 +83,6 @@ def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downlo
         config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
         task = {'download': percent_downloaded}
         utils.update_script(task)
-    else:
-        return None
 
 
 class VidDownloader(object):
@@ -103,25 +102,27 @@ class VidDownloader(object):
             index = random.randint(0, len(id_lst) - 1)
             if index not in used:
                 used.append(index)
+                video_id = id_lst[index]['id']
+
                 """
                 START OF SUB PROCESS
                 """
-                video_id = id_lst[index]['id']
-
                 video = pafy.new(video_id)
                 duration = datetime.strptime(video.duration, '%H:%M:%S')
 
                 if 20 > duration.minute > 0:
                     interval = generate_interval(video, duration)
+                    logger.info('Interval ')
                     self.interval_lst.append(interval)
                     video.getbest(preftype='mp4').download(config.VID_PATH, quiet=True, meta=True, callback=download_handler)
-                    store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
                     """
                     END OF SUB PROCESS 
                     """
+                    store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
                     i += 1
 
     def get_vid_ids(self, download_num):
+        logger.info('Getting video ids...')
         youtube = build(config.YOUTUBE_API_SERVICE_NAME, config.YOUTUBE_API_VERSION,
                         developerKey=config.YOUTUBE_API_KEY, cache_discovery=False)
         id_lst = []
