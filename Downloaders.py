@@ -112,7 +112,7 @@ class VidDownloader(object):
 
                 if 20 > duration.minute > 0:
                     interval = generate_interval(video, duration)
-                    logger.info('Interval ')
+                    logger.info('Interval: ' + str(interval))
                     self.interval_lst.append(interval)
                     video.getbest(preftype='mp4').download(config.VID_PATH, quiet=True, meta=True, callback=download_handler)
                     """
