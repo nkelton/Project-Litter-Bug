@@ -30,8 +30,6 @@ class LitterBug(object):
 
         self.content_uploader = ContentUploader(self.name, self.id, self.result_path)
 
-        config.init_download_tracker()
-
     def generate_id(self):
         id = random.getrandbits(63)
         task = {'litter_id': id}

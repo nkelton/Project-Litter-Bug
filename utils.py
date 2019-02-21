@@ -49,21 +49,25 @@ def get_current_download_value():
     return script_data['download']
 
 
-def recalc_wait_time(end, adjust):
+def recalc_wait_time(tracker, end, adjust):
     logger.info('Recalculating wait time...')
-    logger.info('Current download tracker value: ' + str(config.GLOBAL_DOWNLOAD_TRACKER))
+    logger.info('Current download tracker value: ' + str(config.TIMEOUT_DOWNLOAD_TRACKER))
+
     current_download = get_current_download_value()
-    if config.GLOBAL_DOWNLOAD_TRACKER != current_download:
+    if config.TIMEOUT_DOWNLOAD_TRACKER != current_download:
         logger.info('Adding time...')
-        return end + adjust
+        end = end + adjust
     else:
         logger.info('Removing time...')
-        return end - adjust
+        end = end - adjust
+
+    return current_download, end
 
 
 def wait_timeout(proc, seconds, adjust):
     """Wait for a process to finish, or raise exception after timeout"""
     logger.info('Waiting or timing out...')
+    config.TIMEOUT_DOWNLOAD_TRACKER = 0
     start = time.time()
     end = start + seconds
     interval = min(seconds / 1000.0, .25)
@@ -77,7 +81,7 @@ def wait_timeout(proc, seconds, adjust):
             proc.kill()
             return None
         if time.time() < end:
-            end = recalc_wait_time(end, adjust)
+            config.TIMEOUT_DOWNLOAD_TRACKER, end = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust)
         time.sleep(interval)
 
 
