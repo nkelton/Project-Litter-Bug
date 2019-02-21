@@ -2,7 +2,7 @@ giphy_client
 google-api-python-client
 git+https://github.com/nkelton/moviepy.git
 python_pixabay
-pafy
+git+https://github.com/nkelton/pafy.git
 youtube-dl
 git+https://github.com/nkelton/freesound-python.git
 requests
