@@ -41,6 +41,7 @@ def generate_keyword():
     return word
 
 
+#TODO
 def wait_timeout(proc, seconds):
     """Wait for a process to finish, or raise exception after timeout"""
     start = time.time()
