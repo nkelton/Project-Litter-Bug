@@ -10,7 +10,7 @@ import requests
 from giphy_client.rest import ApiException
 from googleapiclient.discovery import build
 from pafy import pafy
-# from pixabay import Image
+from pixabay import Image
 from tqdm import tqdm
 
 import config
