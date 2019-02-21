@@ -77,19 +77,19 @@ def valid_interval(title, duration, minute, second, interval):
         return title, start.strftime('%H:%M:%S'), end.strftime('%H:%M:%S')
 
 
-# def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
-#     logger.info('Handling download...')
-#     percent_downloaded = round(int(ratio_downloaded * 100))
-#     if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
-#         config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-#         task = {'download': percent_downloaded}
-#         utils.update_script(task)
+def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downloaded, download_rate, eta):
+    logger.info('Handling download...')
+    percent_downloaded = round(int(ratio_downloaded * 100))
+    if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
+        config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
+        task = {'download': percent_downloaded}
+        utils.update_script(task)
 
 
 def download_video(video_id):
     logger.info('Inside download_video...')
     pafy.new(video_id).getbest(preftype='mp4')\
-        .download(config.VID_PATH, quiet=True,  meta=True)
+        .download(config.VID_PATH, quiet=True,  meta=True, callback=download_handler)
 
 
 class VidDownloader(object):
@@ -117,7 +117,7 @@ class VidDownloader(object):
                     interval = generate_interval(video, duration)
                     logger.info('Interval: ' + str(interval))
                     self.interval_lst.append(interval)
-                    cmd = ['runp', 'ClipEditor.py', 'download_video:' + str(video_id)]
+                    cmd = ['runp', 'Downloaders.py', 'download_video:' + str(video_id)]
                     p = subprocess.Popen(cmd)
                     pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT)
                     if pid is not None:
