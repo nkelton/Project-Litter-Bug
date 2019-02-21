@@ -118,7 +118,7 @@ class VidDownloader(object):
                     self.interval_lst.append(interval)
                     cmd = ['runp', 'Downloaders.py', 'download_video:' + str(video_id)]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT)
+                    pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT, config.CONTENT_ADJUST_TIME)
                     if pid is not None:
                         store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
                         i += 1
@@ -167,7 +167,7 @@ class GifDownloader(object):
                     args = ','.join("{0}".format(arg) for arg in [url, gif_path])
                     cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.GIPHY_TIMEOUT)
+                    pid = utils.wait_timeout(p, config.GIPHY_TIMEOUT, config.CONTENT_ADJUST_TIME)
                     if pid is not None:
                         store(self.id, url, 'gif')
                         self.tags.append(search)
@@ -199,7 +199,7 @@ class PicDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.PIXABAY_TIMEOUT)
+                pid = utils.wait_timeout(p, config.PIXABAY_TIMEOUT, config.CONTENT_ADJUST_TIME)
                 if pid is not None:
                     store(self.id, url, 'pic')
                     self.tags.append(search)
@@ -219,7 +219,7 @@ class SfxDownloader(object):
         args = ','.join("{0}".format(arg) for arg in [str(self.id), str(self.download_num)])
         cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
         p = subprocess.Popen(cmd)
-        pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
+        pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT, config.CONTENT_ADJUST_TIME)
 
 
 # TODO search by randomly generated word

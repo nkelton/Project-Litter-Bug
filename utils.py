@@ -41,8 +41,22 @@ def generate_keyword():
     return word
 
 
-#TODO implement dynamic timeout so that it allows more time for processes that are succeeding and less time for those that are not
-def wait_timeout(proc, seconds):
+def get_current_download_value():
+    url = config.BASE_URL + '/script/1/'
+    response = requests.get(url)
+    script_data = response.json()
+    return script_data['download']
+
+
+def recalc_wait_time(end, adjust):
+    current_download = get_current_download_value()
+    if config.GLOBAL_DOWNLOAD_TRACKER != current_download:
+        return end + adjust
+    else:
+        return end - adjust
+
+
+def wait_timeout(proc, seconds, adjust):
     """Wait for a process to finish, or raise exception after timeout"""
     start = time.time()
     end = start + seconds
@@ -56,6 +70,8 @@ def wait_timeout(proc, seconds):
             logger.warning('Process has timed out')
             proc.kill()
             return None
+        if time.time() < end:
+            end = recalc_wait_time(end, adjust)
         time.sleep(interval)
 
 

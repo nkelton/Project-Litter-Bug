@@ -5,7 +5,6 @@ import subprocess
 import Downloaders
 import config
 import utils
-from ClipEditor import ClipEditor
 from ContentUploader import ContentUploader
 
 logger = config.set_logger('LitterBug.py')
@@ -43,16 +42,16 @@ class LitterBug(object):
         self.create_clip()
 
     def download_content(self):
-        self.set_status('Downloading content...')
         logger.info('Downloading content...')
+        self.set_status('Downloading content...')
         self.vid_downloader.download()
         self.gif_downloader.download()
         self.pic_downloader.download()
         self.sfx_downloader.download()
 
     def create_clip(self):
-        self.set_status('Creating new content...')
         logger.info('Creating clip...')
+        self.set_status('Creating new content...')
         str_lst = str(self.vid_downloader.interval_lst)
         interval_lst = str_lst.replace(",", "*")
         args_lst = [str(self.vid_num), str(self.gif_num), str(self.pic_num),
@@ -60,7 +59,7 @@ class LitterBug(object):
         args = ','.join("{0}".format(arg) for arg in args_lst)
         cmd = ['runp', 'ClipEditor.py', 'create:'+args]
         p = subprocess.Popen(cmd)
-        pid = utils.wait_timeout(p, config.CREATION_TIMEOUT)
+        pid = utils.wait_timeout(p, config.CREATION_TIMEOUT, config.CREATION_TIMEOUT)
         if pid is None:
             raise Exception('Clip creation has timed out...')
 
