@@ -54,6 +54,7 @@ def wait_timeout(proc, seconds):
         if time.time() >= end:
             logger.warning('Process has timed out')
             proc.kill()
+            return None
         time.sleep(interval)
 
 

@@ -85,6 +85,12 @@ def download_handler(total_bytes_in_stream, total_bytes_downloaded, ratio_downlo
         utils.update_script(task)
 
 
+def download_video(video_id):
+    logger('Inside download_video...')
+    pafy.new(video_id).getbest(preftype='mp4')\
+        .download(config.VID_PATH, quiet=True,  meta=True, callback=download_handler)
+
+
 class VidDownloader(object):
     def __init__(self, id, download_num):
         self.download_num = download_num
@@ -103,10 +109,6 @@ class VidDownloader(object):
             if index not in used:
                 used.append(index)
                 video_id = id_lst[index]['id']
-
-                """
-                START OF SUB PROCESS
-                """
                 video = pafy.new(video_id)
                 duration = datetime.strptime(video.duration, '%H:%M:%S')
 
@@ -114,12 +116,12 @@ class VidDownloader(object):
                     interval = generate_interval(video, duration)
                     logger.info('Interval: ' + str(interval))
                     self.interval_lst.append(interval)
-                    video.getbest(preftype='mp4').download(config.VID_PATH, quiet=True, meta=True, callback=download_handler)
-                    """
-                    END OF SUB PROCESS 
-                    """
-                    store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
-                    i += 1
+                    cmd = ['runp', 'ClipEditor.py', 'download_video:' + str(video_id)]
+                    p = subprocess.Popen(cmd)
+                    pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT)
+                    if pid is not None:
+                        store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
+                        i += 1
 
     def get_vid_ids(self, download_num):
         logger.info('Getting video ids...')
@@ -165,10 +167,11 @@ class GifDownloader(object):
                     args = ','.join("{0}".format(arg) for arg in [url, gif_path])
                     cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                     p = subprocess.Popen(cmd)
-                    utils.wait_timeout(p, config.GIPHY_TIMEOUT)
-                    store(self.id, url, 'gif')
-                    self.tags.append(search)
-                    i += 1
+                    pid = utils.wait_timeout(p, config.GIPHY_TIMEOUT)
+                    if pid is not None:
+                        store(self.id, url, 'gif')
+                        self.tags.append(search)
+                        i += 1
             except ApiException as e:
                 logger.error("Exception when calling DefaultApi->stickers_random_get: %s\n" % e)
 
@@ -196,11 +199,12 @@ class PicDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
-                utils.wait_timeout(p, config.PIXABAY_TIMEOUT)
-                store(self.id, url, 'pic')
-                self.tags.append(search)
-                i += 1
-        time.sleep(1)
+                pid = utils.wait_timeout(p, config.PIXABAY_TIMEOUT)
+                if pid is not None:
+                    store(self.id, url, 'pic')
+                    self.tags.append(search)
+                    i += 1
+                    time.sleep(.5)
 
 
 class SfxDownloader(object):
@@ -214,7 +218,7 @@ class SfxDownloader(object):
         args = ','.join("{0}".format(arg) for arg in [str(self.id), str(self.download_num)])
         cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
         p = subprocess.Popen(cmd)
-        utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
+        pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT)
 
 
 # TODO search by randomly generated word
