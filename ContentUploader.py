@@ -137,7 +137,7 @@ class ContentUploader(object):
         size = (1280, 720)
         background = ColorClip(size, color)
         logo = ImageClip(config.LOGO_PATH) \
-            .resize(width=400, height=200) \
+            .size(width=400, height=200) \
             .set_pos(('center', 'center'))
         text = TextClip(txt=str(self.id), size=(500, 500)).set_position(
             ('center', 'bottom'))

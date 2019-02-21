@@ -62,6 +62,8 @@ def recalc_wait_time(download_tracker, end, adjust):
     return current_download, end
 
 
+#TODO can also implement by checking on TIMEOUT_DOWNLOAD_TRACKER
+# if value hasn't changed in 5-10 minutes, then we kill the process
 def wait_timeout(proc, seconds, adjust, interval):
     """Wait for a process to finish, or raise exception after timeout"""
     logger.info('Waiting or timing out...')
