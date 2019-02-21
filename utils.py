@@ -69,7 +69,6 @@ def wait_timeout(proc, seconds, adjust, interval):
     start = time.time()
     end = start + seconds
     wait_interval = interval
-    logger.info('Wait Interval:: ' + str(wait_interval))
 
     while True:
         result = proc.poll()
@@ -82,7 +81,6 @@ def wait_timeout(proc, seconds, adjust, interval):
         if time.time() < end:
             config.TIMEOUT_DOWNLOAD_TRACKER, end = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust)
 
-        logger.info('Current timeout value: ' + str(end))
         time.sleep(wait_interval)
 
 

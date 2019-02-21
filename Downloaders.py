@@ -120,8 +120,11 @@ class VidDownloader(object):
                     p = subprocess.Popen(cmd)
                     pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
                     if pid is not None:
+                        logger.info('download_video ran successfully!')
                         store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
                         i += 1
+                    else:
+                        logger.info('download_video timed out!')
 
     def get_vid_ids(self, download_num):
         logger.info('Getting video ids...')
@@ -169,9 +172,12 @@ class GifDownloader(object):
                     p = subprocess.Popen(cmd)
                     pid = utils.wait_timeout(p, config.GIPHY_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
                     if pid is not None:
+                        logger.info('Gif downloader ran successfully!')
                         store(self.id, url, 'gif')
                         self.tags.append(search)
                         i += 1
+                    else:
+                        logger.info('Gif downloader timed out!')
             except ApiException as e:
                 logger.error("Exception when calling DefaultApi->stickers_random_get: %s\n" % e)
 
@@ -201,13 +207,15 @@ class PicDownloader(object):
                 p = subprocess.Popen(cmd)
                 pid = utils.wait_timeout(p, config.PIXABAY_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
                 if pid is not None:
+                    logger.info('Picture downloader ran successfully!')
                     store(self.id, url, 'pic')
                     self.tags.append(search)
                     i += 1
                     time.sleep(.5)
+                else:
+                    logger.info('Picture downloader timeout out!')
 
 
-# TODO account for not incrementing when download times out
 class SfxDownloader(object):
     def __init__(self, id, download_num):
         self.id = id
@@ -216,31 +224,36 @@ class SfxDownloader(object):
 
     def download(self):
         logger.info('Downloading sfx...')
-        args = ','.join("{0}".format(arg) for arg in [str(self.id), str(self.download_num)])
-        cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
-        p = subprocess.Popen(cmd)
-        pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
-        if pid is not None:
-            logger.info('download_sfx successfully ran...')
-        else:
-            logger.error('download_sfx function has timed out...')
+        client = freesound.FreesoundClient()
+        client.set_token(config.FREESOUND_API_KEY)
+        i = 0
+
+        while i < int(self.download_num):
+                sound_id = random.randint(0, 96451)
+                response = client.get_sound(sound_id)
+                url = response.url
+                args = ','.join("{0}".format(arg) for arg in [str(sound_id), str(i)])
+                cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
+                p = subprocess.Popen(cmd)
+                pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT, config.CONTENT_ADJUST_TIME,
+                                         config.CONTENT_WAIT_INTERVAL)
+                if pid is not None:
+                    logger.info('download_sfx successfully ran...')
+                    store(self.id, url, 'sfx')
+                    i += 0
+                else:
+                    logger.error('download_sfx function has timed out...')
 
 
 # TODO search by randomly generated word
-def download_sfx(litter_id, download_num):
-    logger.info('Inside download_sfx...')
-    client = freesound.FreesoundClient()
-    client.set_token(config.FREESOUND_API_KEY)
-    i = 0
-
-    while i < int(download_num):
-        try:
-            response = client.get_sound(random.randint(0, 96451))
-            url = response.url
-            name = str(i) + '.mp3'
-            response.retrieve_preview(config.SFX_PATH, name=name)
-            store(litter_id, url, 'sfx')
-            i += 1
-        except Exception as e:
-            logger.error('Exception occrured while downloading sfx...')
-            logger.error(e)
+def download_sfx(sound_id, counter):
+    try:
+        logger.info('Inside download_sfx...')
+        client = freesound.FreesoundClient()
+        client.set_token(config.FREESOUND_API_KEY)
+        response = client.get_sound(sound_id)
+        name = str(counter) + '.mp3'
+        response.retrieve_preview(config.SFX_PATH, name=name)
+    except Exception as e:
+        logger.error('Exception occrured while downloading sfx...')
+        logger.error(e)
