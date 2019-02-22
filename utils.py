@@ -51,10 +51,8 @@ def get_current_download_value():
 def recalc_wait_time(download_tracker, end, adjust):
     current_download = get_current_download_value()
     if download_tracker != current_download:
-        logger.info('Adding time...')
         end = end + adjust
     else:
-        logger.info('Removing time...')
         end = end - adjust
 
     return current_download, end
