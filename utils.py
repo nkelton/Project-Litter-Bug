@@ -42,7 +42,6 @@ def generate_keyword():
 
 
 def get_current_download_value():
-    logger.info('Getting download value...')
     url = config.BASE_URL + '/script/1/'
     response = requests.get(url)
     script_data = response.json()
@@ -50,7 +49,6 @@ def get_current_download_value():
 
 
 def recalc_wait_time(download_tracker, end, adjust):
-    logger.info('Recalculating wait time...')
     current_download = get_current_download_value()
     if download_tracker != current_download:
         logger.info('Adding time...')
