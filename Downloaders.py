@@ -196,7 +196,7 @@ class PicDownloader(object):
         logger.info('PICS NEEDED: ' + str(self.download_num))
 
         while i < self.download_num:
-            logger.info('PICS DOWNLOADED: ' + str(self.download_num))
+            logger.info('PICS DOWNLOADED: ' + str(i))
             search = utils.generate_keyword()
             img_search = pix.search(q=search, page=1, per_page=30)
             hits = len(img_search['hits'])
@@ -247,7 +247,7 @@ class SfxDownloader(object):
                 if pid is not None:
                     logger.info('download_sfx successfully ran...')
                     store(self.id, url, 'sfx')
-                    i += 0
+                    i += 1
                 else:
                     logger.error('download_sfx function has timed out...')
             except Exception as e:
@@ -257,13 +257,9 @@ class SfxDownloader(object):
 
 # TODO search by randomly generated word
 def download_sfx(sound_id, counter):
-    try:
-        logger.info('Inside download_sfx...')
-        client = freesound.FreesoundClient()
-        client.set_token(config.FREESOUND_API_KEY)
-        response = client.get_sound(sound_id)
-        name = str(counter) + '.mp3'
-        response.retrieve_preview(config.SFX_PATH, name=name)
-    except Exception as e:
-        logger.error('Exception occrured while downloading sfx...')
-        logger.error(e)
+    logger.info('Inside download_sfx...')
+    client = freesound.FreesoundClient()
+    client.set_token(config.FREESOUND_API_KEY)
+    response = client.get_sound(sound_id)
+    name = str(counter) + '.mp3'
+    response.retrieve_preview(config.SFX_PATH, name=name)
