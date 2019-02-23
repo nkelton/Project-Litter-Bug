@@ -16,7 +16,7 @@ if __name__ == '__main__':
         try:
             logger.info('LAUNCHING NEW LITTER BUG...')
             p = subprocess.Popen(litter_bug, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            wait_timeout(p, config.LITTER_BUG_TIMEOUT)
+            wait_timeout(p, config.LITTER_BUG_TIMEOUT, 0, 300)
         except subprocess.CalledProcessError as e:
             logger.error('Error has occurred in run.py')
             logger.error(e)
