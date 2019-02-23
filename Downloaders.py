@@ -193,15 +193,22 @@ class PicDownloader(object):
         pix = Image(config.PIXABAY_API_KEY)
         i = 0
 
+        logger.info('PICS NEEDED: ' + str(self.download_num))
+
         while i < self.download_num:
+            logger.info('PICS DOWNLOADED: ' + str(self.download_num))
             search = utils.generate_keyword()
             img_search = pix.search(q=search, page=1, per_page=30)
             hits = len(img_search['hits'])
-
+            logger.info('Number of results for keyword "'+search+'": ' + str(hits))
             if hits:
                 index = random.randint(0, hits - 1)
                 url = img_search['hits'][index]['webformatURL']
                 pic_path = config.PIC_PATH + str(i) + '.jpg'
+
+                logger.info('Downloading from url...: ' + url)
+                logger.info('Downloading to...: ' + pic_path)
+
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
@@ -211,7 +218,6 @@ class PicDownloader(object):
                     store(self.id, url, 'pic')
                     self.tags.append(search)
                     i += 1
-                    time.sleep(.5)
                 else:
                     logger.info('Picture downloader timeout out!')
 
