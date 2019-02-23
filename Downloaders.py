@@ -34,6 +34,8 @@ def store(litter_id, url, type):
 def downloader(url, download_path):
     logger.info('Inside downloader...')
     r = requests.get(url, stream=True)
+    logger.info('status_code: ' + str(r.status_code))
+    logger.info('reason: ' + str(r.reason))
     total_size = int(r.headers.get('content-length', 0))
     block_size = 1024
     total_bytes = math.ceil(total_size // block_size)
@@ -49,8 +51,8 @@ def downloader(url, download_path):
                     config.GLOBAL_DOWNLOAD_TRACKER = 100
                 else:
                     config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-                    task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
-                    utils.update_script(task)
+                task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
+                utils.update_script(task)
                 time.sleep(.1)
     f.close()
 
@@ -118,7 +120,8 @@ class VidDownloader(object):
                     self.interval_lst.append(interval)
                     cmd = ['runp', 'Downloaders.py', 'download_video:' + str(video_id)]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
+                    pid = utils.downloader_wait_timeout(p, config.YOUTUBE_TIMEOUT, config.CONTENT_ADJUST_TIME,
+                                                        config.CONTENT_WAIT_INTERVAL)
                     if pid is not None:
                         logger.info('download_video ran successfully!')
                         store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
@@ -170,7 +173,8 @@ class GifDownloader(object):
                     args = ','.join("{0}".format(arg) for arg in [url, gif_path])
                     cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.GIPHY_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
+                    pid = utils.downloader_wait_timeout(p, config.GIPHY_TIMEOUT, config.CONTENT_ADJUST_TIME,
+                                                        config.CONTENT_WAIT_INTERVAL)
                     if pid is not None:
                         logger.info('Gif downloader ran successfully!')
                         store(self.id, url, 'gif')
@@ -212,7 +216,8 @@ class PicDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.PIXABAY_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
+                pid = utils.downloader_wait_timeout(p, config.PIXABAY_TIMEOUT, config.CONTENT_ADJUST_TIME,
+                                                    config.CONTENT_WAIT_INTERVAL)
                 if pid is not None:
                     logger.info('Picture downloader ran successfully!')
                     store(self.id, url, 'pic')
@@ -242,8 +247,7 @@ class SfxDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [str(sound_id), str(i)])
                 cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT, config.CONTENT_ADJUST_TIME,
-                                         config.CONTENT_WAIT_INTERVAL)
+                pid = utils.downloader_wait_timeout(p, config.FREESOUND_TIMEOUT, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
                 if pid is not None:
                     logger.info('download_sfx successfully ran...')
                     store(self.id, url, 'sfx')
