@@ -48,14 +48,16 @@ def get_current_download_value():
     return script_data['download']
 
 
-def recalc_wait_time(download_tracker, end, adjust):
+def recalc_wait_time(download_tracker, end, adjust, wait_interval):
     current_download = get_current_download_value()
     if download_tracker != current_download:
         end = end + adjust
+        new_interval = wait_interval
     else:
         end = end - adjust
+        new_interval = wait_interval - min(wait_interval/2)
 
-    return current_download, end
+    return current_download, end, new_interval
 
 
 #TODO can also implement by checking on TIMEOUT_DOWNLOAD_TRACKER
@@ -77,6 +79,5 @@ def wait_timeout(proc, seconds, adjust, interval):
             proc.kill()
             return None
         if time.time() < end:
-            config.TIMEOUT_DOWNLOAD_TRACKER, end = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust)
-
+            config.TIMEOUT_DOWNLOAD_TRACKER, end, wait_interval = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust, wait_interval)
         time.sleep(wait_interval)
