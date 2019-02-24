@@ -62,22 +62,38 @@ def recalc_wait_time(download_tracker, end, adjust, wait_interval):
 
 #TODO can also implement by checking on TIMEOUT_DOWNLOAD_TRACKER
 # if value hasn't changed in 5-10 minutes, then we kill the process
-def wait_timeout(proc, seconds, adjust, interval):
+# def wait_timeout(proc, seconds, adjust, interval):
+#     """Wait for a process to finish, or raise exception after timeout"""
+#     logger.info('Waiting or timing out...')
+#     config.TIMEOUT_DOWNLOAD_TRACKER = 0
+#     start = time.time()
+#     end = start + seconds
+#     wait_interval = interval
+#
+#     while True:
+#         result = proc.poll()
+#         if result is not None:
+#             return result
+#         if time.time() >= end:
+#             logger.warning('Process has timed out...')
+#             proc.kill()
+#             return None
+#         if time.time() < end:
+#             config.TIMEOUT_DOWNLOAD_TRACKER, end, wait_interval = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust, wait_interval)
+#         time.sleep(wait_interval)
+
+def wait_timeout(proc, seconds):
     """Wait for a process to finish, or raise exception after timeout"""
-    logger.info('Waiting or timing out...')
-    config.TIMEOUT_DOWNLOAD_TRACKER = 0
     start = time.time()
     end = start + seconds
-    wait_interval = interval
+    interval = min(seconds / 1000.0, .25)
 
     while True:
         result = proc.poll()
         if result is not None:
             return result
         if time.time() >= end:
-            logger.warning('Process has timed out...')
+            logger.warning('Process has timed out')
             proc.kill()
             return None
-        if time.time() < end:
-            config.TIMEOUT_DOWNLOAD_TRACKER, end, wait_interval = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust, wait_interval)
-        time.sleep(wait_interval)
+        time.sleep(interval)

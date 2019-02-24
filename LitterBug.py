@@ -15,10 +15,10 @@ class LitterBug(object):
         self.id = self.generate_id()
         self.name = 'plb-' + str(self.id) + '.mp4'
 
-        self.vid_num = random.randint(2, 5)
-        self.gif_num = random.randint(3, 9)
-        self.pic_num = random.randint(3, 9)
-        self.sfx_num = random.randint(3, 9)
+        self.vid_num = 1#random.randint(2, 5)
+        self.gif_num = 1#random.randint(3, 9)
+        self.pic_num = 9#random.randint(3, 9)
+        self.sfx_num = 9#random.randint(3, 9)
 
         logger.info('Vid num: ' + str(self.vid_num))
         logger.info('Gif num: ' + str(self.gif_num))
@@ -64,8 +64,8 @@ class LitterBug(object):
         args = ','.join("{0}".format(arg) for arg in args_lst)
         cmd = ['runp', 'ClipEditor.py', 'create:'+args]
         p = subprocess.Popen(cmd)
-        pid = utils.wait_timeout(p, config.CREATION_TIMEOUT, config.LITTER_ADJUST_TIME,
-                                 config.LITTER_WAIT_INTERVAL)
+        pid = utils.wait_timeout(p, config.CREATION_TIMEOUT)#, config.LITTER_ADJUST_TIME,
+                                 #config.LITTER_WAIT_INTERVAL)
         if pid is None:
             raise Exception('Clip creation has timed out...')
 
