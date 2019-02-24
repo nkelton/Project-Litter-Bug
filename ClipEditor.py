@@ -168,7 +168,7 @@ class ClipEditor(object):
         color = (255, 255, 255)
         size = (1280, 720)
         clip = ColorClip(size, color, duration=3)
-        logo = ImageClip(config.LOGO_PATH).resize(width=400, height=200).set_position(('center', 'center'))
+        logo = ImageClip(config.LOGO_PATH).size(width=400, height=200).set_position(('center', 'center'))
         return CompositeVideoClip([clip, logo])
 
     def add_clip(self, clip):
