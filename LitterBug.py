@@ -2,6 +2,7 @@ import random
 import time
 import subprocess
 
+import ClipEditor
 import Downloaders
 import config
 import utils
@@ -66,6 +67,7 @@ class LitterBug(object):
         p = subprocess.Popen(cmd)
         pid = utils.wait_timeout(p, config.CREATION_TIMEOUT)#, config.LITTER_ADJUST_TIME,
                                  #config.LITTER_WAIT_INTERVAL)
+        ClipEditor.create(self.vid_num, self.gif_num, self.pic_num, self.sfx_num, interval_lst)
         if pid is None:
             raise Exception('Clip creation has timed out...')
 

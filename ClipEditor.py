@@ -24,8 +24,8 @@ def string_to_list(lst_str):
 
 def create(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst_str):
     logger.info('Creating clip at create...')
-    interval_lst = string_to_list(interval_lst_str)
-    clip_editor = ClipEditor(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst)
+    #interval_lst = string_to_list(interval_lst_str)
+    clip_editor = ClipEditor(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst_str)
     clip_editor.create_clip()
     clip_editor.download()
 
@@ -65,8 +65,8 @@ class ClipEditor(object):
 
         if m_type == 0:
             m_clip = (clip.fx(vfx.mirror_y)
-                      .fx(vfx.colorx, factor=random.randint(0, 50)))
-                      #.fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
+                      .fx(vfx.colorx, factor=random.randint(0, 50))
+                      .fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
         elif m_type == 1:
             m_clip = (clip.fx(vfx.invert_colors)
                       .fx(vfx.colorx, factor=random.randint(0, 50))
@@ -77,8 +77,8 @@ class ClipEditor(object):
         else:
             m_clip = (clip.fx(vfx.invert_colors)
                       .fx(vfx.mirror_y)
-                      .fx(vfx.gamma_corr, gamma=random.uniform(0, 5)))
-                      #.fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
+                      .fx(vfx.gamma_corr, gamma=random.uniform(0, 5))
+                      .fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
         return m_clip
 
     def decorate_clip(self, clip):
