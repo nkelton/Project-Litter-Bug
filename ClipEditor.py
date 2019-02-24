@@ -65,8 +65,8 @@ class ClipEditor(object):
 
         if m_type == 0:
             m_clip = (clip.fx(vfx.mirror_y)
-                      .fx(vfx.colorx, factor=random.randint(0, 50))
-                      .fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
+                      .fx(vfx.colorx, factor=random.randint(0, 50)))
+                      #.fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
         elif m_type == 1:
             m_clip = (clip.fx(vfx.invert_colors)
                       .fx(vfx.colorx, factor=random.randint(0, 50))
@@ -77,8 +77,8 @@ class ClipEditor(object):
         else:
             m_clip = (clip.fx(vfx.invert_colors)
                       .fx(vfx.mirror_y)
-                      .fx(vfx.gamma_corr, gamma=random.uniform(0, 5))
-                      .fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
+                      .fx(vfx.gamma_corr, gamma=random.uniform(0, 5)))
+                      #.fx(vfx.painting, saturation=random.uniform(0, 5), black=random.uniform(0, 0.01)))
         return m_clip
 
     def decorate_clip(self, clip):
