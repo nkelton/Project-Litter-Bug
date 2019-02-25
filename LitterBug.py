@@ -16,10 +16,10 @@ class LitterBug(object):
         self.id = self.generate_id()
         self.name = 'plb-' + str(self.id) + '.mp4'
 
-        self.vid_num = 1#random.randint(2, 5)
-        self.gif_num = 1#random.randint(3, 9)
-        self.pic_num = 9#random.randint(3, 9)
-        self.sfx_num = 9#random.randint(3, 9)
+        self.vid_num = random.randint(2, 5)
+        self.gif_num = random.randint(3, 9)
+        self.pic_num = random.randint(3, 9)
+        self.sfx_num = random.randint(3, 9)
 
         logger.info('Vid num: ' + str(self.vid_num))
         logger.info('Gif num: ' + str(self.gif_num))
