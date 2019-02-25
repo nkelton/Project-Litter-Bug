@@ -65,7 +65,7 @@ class LitterBug(object):
         args = ','.join("{0}".format(arg) for arg in args_lst)
         cmd = ['runp', 'ClipEditor.py', 'create:'+args]
         p = subprocess.Popen(cmd)
-        pid = utils.wait_timeout(p, config.CREATION_TIMEOUT)
+        pid = utils.wait_timeout_interval(p, config.CREATE_TIMEOUT, config.CREATE_INTERVAL)
         if pid is None:
            raise Exception('Clip creation has timed out...')
 

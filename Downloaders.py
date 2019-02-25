@@ -120,7 +120,7 @@ class VidDownloader(object):
                     self.interval_lst.append(interval)
                     cmd = ['runp', 'Downloaders.py', 'download_video:' + str(video_id)]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.YOUTUBE_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
+                    pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
                                              #config.CONTENT_WAIT_INTERVAL)
                     if pid is not None:
                         logger.info('download_video ran successfully!')
@@ -173,7 +173,7 @@ class GifDownloader(object):
                     args = ','.join("{0}".format(arg) for arg in [url, gif_path])
                     cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.GIPHY_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
+                    pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
                                              #config.CONTENT_WAIT_INTERVAL)
                     if pid is not None:
                         logger.info('Gif downloader ran successfully!')
@@ -216,7 +216,7 @@ class PicDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.PIXABAY_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
+                pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
                                          #config.CONTENT_WAIT_INTERVAL)
                 if pid is not None:
                     logger.info('Picture downloader ran successfully!')
@@ -247,7 +247,7 @@ class SfxDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [str(sound_id), str(i)])
                 cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.FREESOUND_TIMEOUT)#, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
+                pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
                 if pid is not None:
                     logger.info('download_sfx successfully ran...')
                     store(self.id, url, 'sfx')
