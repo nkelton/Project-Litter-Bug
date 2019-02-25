@@ -48,45 +48,11 @@ def get_current_download_value():
     return script_data['download']
 
 
-# def recalc_wait_time(download_tracker, end, adjust, wait_interval):
-#     current_download = get_current_download_value()
-#     if download_tracker != current_download:
-#         end = end + adjust
-#         new_interval = wait_interval
-#     else:
-#         end = end - adjust
-#         new_interval = wait_interval - min(wait_interval/2)
-#
-#     return current_download, end, new_interval
-
-
-#TODO can also implement by checking on TIMEOUT_DOWNLOAD_TRACKER
-# if value hasn't changed in 5-10 minutes, then we kill the process
-# def wait_timeout(proc, seconds, adjust, interval):
-#     """Wait for a process to finish, or raise exception after timeout"""
-#     logger.info('Waiting or timing out...')
-#     config.TIMEOUT_DOWNLOAD_TRACKER = 0
-#     start = time.time()
-#     end = start + seconds
-#     wait_interval = interval
-#
-#     while True:
-#         result = proc.poll()
-#         if result is not None:
-#             return result
-#         if time.time() >= end:
-#             logger.warning('Process has timed out...')
-#             proc.kill()
-#             return None
-#         if time.time() < end:
-#             config.TIMEOUT_DOWNLOAD_TRACKER, end, wait_interval = recalc_wait_time(config.TIMEOUT_DOWNLOAD_TRACKER, end, adjust, wait_interval)
-#         time.sleep(wait_interval)
-
 def is_stalling(download_tracker):
     if download_tracker == get_current_download_value():
-        return False
-    else:
         return True
+    else:
+        return False
 
 
 def wait_timeout_interval(proc, seconds, interval):
