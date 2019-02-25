@@ -24,8 +24,8 @@ def string_to_list(lst_str):
 
 def create(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst_str):
     logger.info('Creating clip at create...')
-    #interval_lst = string_to_list(interval_lst_str)
-    clip_editor = ClipEditor(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst_str)
+    interval_lst = string_to_list(interval_lst_str)
+    clip_editor = ClipEditor(vid_num, gif_num, pic_num, sfx_num, result_path, interval_lst)
     clip_editor.create_clip()
     clip_editor.download()
 
