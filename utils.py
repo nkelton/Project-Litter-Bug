@@ -91,6 +91,7 @@ def is_stalling(download_tracker):
 
 def wait_timeout_interval(proc, seconds, interval):
     """Wait for a process to finish, or raise exception after timeout"""
+    logger.info('Waiting or timing out with interval...')
     start = time.time()
     end = start + seconds
     wait = interval
@@ -110,6 +111,7 @@ def wait_timeout_interval(proc, seconds, interval):
 
 def wait_timeout(proc, seconds):
     """Wait for a process to finish, or raise exception after timeout"""
+    logger.info('Waiting or timing out...')
     start = time.time()
     end = start + seconds
     interval = min(seconds / 1000.0, .25)
