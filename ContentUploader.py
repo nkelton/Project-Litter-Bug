@@ -47,6 +47,7 @@ class ContentUploader(object):
                       '--description=' + description,
                       '--category=' + category,
                       '--tags=' + self.tags,
+                      '--playlist=Litter',
                       '--client-secrets=' + config.SECRET_PATH,
                       self.result_path]
         process_output = []
