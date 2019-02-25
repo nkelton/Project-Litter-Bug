@@ -58,19 +58,16 @@ class LitterBug(object):
     def create_clip(self):
         logger.info('Creating clip...')
         self.set_status('Creating new content...')
-        #str_lst = str(self.vid_downloader.interval_lst)
-        #interval_lst = str_lst.replace(",", "*")
-        #args_lst = [str(self.vid_num), str(self.gif_num), str(self.pic_num),
-        #            str(self.sfx_num), self.result_path, interval_lst]
-        #args = ','.join("{0}".format(arg) for arg in args_lst)
-        #cmd = ['runp', 'ClipEditor.py', 'create:'+args]
-        #p = subprocess.Popen(cmd)
-        #pid = utils.wait_timeout(p, config.CREATION_TIMEOUT)#, config.LITTER_ADJUST_TIME,
-                                 #config.LITTER_WAIT_INTERVAL)
-        ClipEditor.create(self.vid_num, self.gif_num, self.pic_num, self.sfx_num, self.result_path,
-                          self.vid_downloader.interval_lst)
-        #if pid is None:
-        #    raise Exception('Clip creation has timed out...')
+        str_lst = str(self.vid_downloader.interval_lst)
+        interval_lst = str_lst.replace(",", "*")
+        args_lst = [str(self.vid_num), str(self.gif_num), str(self.pic_num),
+                   str(self.sfx_num), self.result_path, interval_lst]
+        args = ','.join("{0}".format(arg) for arg in args_lst)
+        cmd = ['runp', 'ClipEditor.py', 'create:'+args]
+        p = subprocess.Popen(cmd)
+        pid = utils.wait_timeout(p, config.CREATION_TIMEOUT)
+        if pid is None:
+           raise Exception('Clip creation has timed out...')
 
     def upload_clip(self):
         logger.info('Uploading clip...')
@@ -113,3 +110,4 @@ class LitterBug(object):
     def set_status(status):
         task = {'status': status}
         utils.update_script(task)
+
