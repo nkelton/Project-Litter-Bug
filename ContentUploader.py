@@ -136,12 +136,13 @@ class ContentUploader(object):
         color = (255, 255, 255)
         size = (1280, 720)
         background = ColorClip(size, color)
-        logo = ImageClip(config.LOGO_PATH) \
+        logo = ImageClip(config.LOGO_PATH).set_duration(1) \
             .resize(width=400, height=200) \
             .set_pos(('center', 'center'))
         text = TextClip(txt=str(self.id), size=(500, 500)).set_position(
             ('center', 'bottom'))
         CompositeVideoClip([background, logo, text]).save_frame(config.THUMB_PATH)
+        logger.info('Thumbnail saved...')
 
     def set_thumbnail(self):
         logger.info('Setting thumbnail...')
