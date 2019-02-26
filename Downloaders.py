@@ -46,11 +46,13 @@ def downloader(url, download_path):
             f.write(data)
             progress += 1
             percent_downloaded = round((progress / total_bytes) * 100)
+            logger.info('percent_downloaded: ' + str(percent_downloaded))
             if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
                 if percent_downloaded > 100:
                     config.GLOBAL_DOWNLOAD_TRACKER = 100
                 else:
                     config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
+                logger.info('GLOBAL DOWNLOAD_TRACKER: ' + str(config.GLOBAL_DOWNLOAD_TRACKER))
                 task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
                 utils.update_script(task)
                 time.sleep(.1)
@@ -120,8 +122,7 @@ class VidDownloader(object):
                     self.interval_lst.append(interval)
                     cmd = ['runp', 'Downloaders.py', 'download_video:' + str(video_id)]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
-                                             #config.CONTENT_WAIT_INTERVAL)
+                    pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)
                     if pid is not None:
                         logger.info('download_video ran successfully!')
                         store(self.id, 'https://www.youtube.com/watch?v=' + str(video.videoid), 'vid')
@@ -173,8 +174,7 @@ class GifDownloader(object):
                     args = ','.join("{0}".format(arg) for arg in [url, gif_path])
                     cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                     p = subprocess.Popen(cmd)
-                    pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
-                                             #config.CONTENT_WAIT_INTERVAL)
+                    pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)
                     if pid is not None:
                         logger.info('Gif downloader ran successfully!')
                         store(self.id, url, 'gif')
@@ -216,8 +216,8 @@ class PicDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME,
-                                         #config.CONTENT_WAIT_INTERVAL)
+                pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)
+
                 if pid is not None:
                     logger.info('Picture downloader ran successfully!')
                     store(self.id, url, 'pic')
@@ -247,7 +247,7 @@ class SfxDownloader(object):
                 args = ','.join("{0}".format(arg) for arg in [str(sound_id), str(i)])
                 cmd = ['runp', 'Downloaders.py', 'download_sfx:' + args]
                 p = subprocess.Popen(cmd)
-                pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)#, config.CONTENT_ADJUST_TIME, config.CONTENT_WAIT_INTERVAL)
+                pid = utils.wait_timeout(p, config.DOWNLOAD_TIMEOUT)
                 if pid is not None:
                     logger.info('download_sfx successfully ran...')
                     store(self.id, url, 'sfx')
