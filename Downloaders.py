@@ -41,21 +41,41 @@ def downloader(url, download_path):
     total_bytes = math.ceil(total_size // block_size)
     progress = 0
 
-    with open(download_path, 'wb') as f:
+    logger.info('total_size: ' + str(total_size))
+    logger.info('total_bytes: ' + str(total_bytes))
+
+    f = None
+    try:
+        f = open(download_path, "wb")
+        print("file successfully opened!!!")
+    except IOError:
+        print ("Could not open file!!")
+
+    with f:
+        logger.info('Inside downloader with statement...')
         for data in tqdm(r.iter_content(block_size), total=total_bytes, unit='B'):
+            logger.info('Inside downloader for loop...')
             f.write(data)
             progress += 1
             percent_downloaded = round((progress / total_bytes) * 100)
             logger.info('percent_downloaded: ' + str(percent_downloaded))
             if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
+                logger.info('GLOBAL_DOWNLOAD_TRACKER does not equal percent_downloaded')
                 if percent_downloaded > 100:
+                    logger.info('percent_downloaded is > 100')
                     config.GLOBAL_DOWNLOAD_TRACKER = 100
                 else:
+                    logger.info('percent_downloaded is <= 100')
                     config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
                 logger.info('GLOBAL DOWNLOAD_TRACKER: ' + str(config.GLOBAL_DOWNLOAD_TRACKER))
                 task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
+                logger.info('updating script...')
                 utils.update_script(task)
+                logger.info('Sleeping...')
                 time.sleep(.1)
+            else:
+                logger.info('GLOBAL_DOWNLOAD_TRACKER is equal to current download value..')
+
     f.close()
 
 
@@ -224,6 +244,7 @@ class PicDownloader(object):
                     self.tags.append(search)
                     i += 1
                 else:
+                    utils.clear_file(pic_path)
                     logger.info('Picture downloader timeout out!')
 
 
