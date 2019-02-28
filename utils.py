@@ -91,3 +91,22 @@ def wait_timeout(proc, seconds):
             proc.kill()
             return None
         time.sleep(interval)
+
+
+def wait_timeout_extended(proc, seconds, interval):
+    """Wait for a process to finish, or raise exception after timeout"""
+    logger.info('Waiting or timing out with interval...')
+    start = time.time()
+    end = start + seconds
+    wait = interval
+
+    while True:
+        result = proc.poll()
+        if result is not None:
+            return result
+        if time.time() >= end:
+            logger.warning('Process has timed out')
+            proc.kill()
+            return None
+        config.TIMEOUT_DOWNLOAD_TRACKER = get_current_download_value()
+        time.sleep(wait)

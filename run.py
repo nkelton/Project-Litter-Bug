@@ -3,7 +3,7 @@ import subprocess
 import sys
 
 import config
-from utils import wait_timeout
+from utils import wait_timeout, wait_timeout_extended
 
 litter_bug = ['python3', config.BASE_PATH + 'main.py']
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
         try:
             logger.info('LAUNCHING NEW LITTER BUG...')
             p = subprocess.Popen(litter_bug, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            wait_timeout(p, config.LITTER_BUG_TIMEOUT)
+            wait_timeout_extended(p, config.LITTER_BUG_TIMEOUT, config.LITTER_BUG_INTERVAL)
         except subprocess.CalledProcessError as e:
             logger.error('Error has occurred in run.py')
             logger.error(e)
