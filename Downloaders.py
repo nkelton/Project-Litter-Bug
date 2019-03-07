@@ -27,8 +27,6 @@ def store(litter_id, url, type):
         'url': url,
         'type': type,
     })
-    logger.info('Storing call returned: ' + str(response.status_code))
-    logger.info('Reason: ' + str(response.reason))
 
 
 def downloader(url, download_path):
@@ -41,37 +39,20 @@ def downloader(url, download_path):
     total_bytes = math.ceil(total_size // block_size)
     progress = 0
 
-    logger.info('total_size: ' + str(total_size))
-    logger.info('total_bytes: ' + str(total_bytes))
-
-    f = None
-    try:
-        f = open(download_path, "wb")
-        print("file successfully opened!!!")
-    except IOError:
-        print ("Could not open file!!")
-
-    with f:
+    with open(download_path, 'wb') as f:
         logger.info('Inside downloader with statement...')
         for data in tqdm(r.iter_content(block_size), total=total_bytes, unit='B'):
             logger.info('Inside downloader for loop...')
             f.write(data)
             progress += 1
             percent_downloaded = round((progress / total_bytes) * 100)
-            logger.info('percent_downloaded: ' + str(percent_downloaded))
             if config.GLOBAL_DOWNLOAD_TRACKER != percent_downloaded:
-                logger.info('GLOBAL_DOWNLOAD_TRACKER does not equal percent_downloaded')
                 if percent_downloaded > 100:
-                    logger.info('percent_downloaded is > 100')
                     config.GLOBAL_DOWNLOAD_TRACKER = 100
                 else:
-                    logger.info('percent_downloaded is <= 100')
                     config.GLOBAL_DOWNLOAD_TRACKER = percent_downloaded
-                logger.info('GLOBAL DOWNLOAD_TRACKER: ' + str(config.GLOBAL_DOWNLOAD_TRACKER))
                 task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
-                logger.info('updating script...')
                 utils.update_script(task)
-                logger.info('Sleeping...')
                 time.sleep(.1)
             else:
                 logger.info('GLOBAL_DOWNLOAD_TRACKER is equal to current download value..')
@@ -217,21 +198,14 @@ class PicDownloader(object):
         pix = Image(config.PIXABAY_API_KEY)
         i = 0
 
-        logger.info('PICS NEEDED: ' + str(self.download_num))
-
         while i < self.download_num:
-            logger.info('PICS DOWNLOADED: ' + str(i))
             search = utils.generate_keyword()
             img_search = pix.search(q=search, page=1, per_page=30)
             hits = len(img_search['hits'])
-            logger.info('Number of results for keyword "'+search+'": ' + str(hits))
             if hits:
                 index = random.randint(0, hits - 1)
                 url = img_search['hits'][index]['webformatURL']
                 pic_path = config.PIC_PATH + str(i) + '.jpg'
-
-                logger.info('Downloading from url...: ' + url)
-                logger.info('Downloading to...: ' + pic_path)
 
                 args = ','.join("{0}".format(arg) for arg in [url, pic_path])
                 cmd = ['runp', 'Downloaders.py', 'downloader:' + args]

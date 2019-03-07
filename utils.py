@@ -37,7 +37,6 @@ def generate_keyword():
     response = requests.get(word_url)
     words = response.content.splitlines()
     word = words[random.randint(0, len(words) - 1)].decode('utf-8')
-    logger.info('Random word: ' + word)
     return word
 
 
