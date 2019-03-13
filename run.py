@@ -1,16 +1,15 @@
-import logging
-import subprocess
-import sys
-
 import config
+import googlecloudprofiler
+import subprocess
 from utils import wait_timeout, wait_timeout_extended
-
-litter_bug = ['python3', config.BASE_PATH + 'main.py']
 
 logger = config.set_logger('run.py')
 
-if __name__ == '__main__':
-    logger.info('BEGINNING OF LITTER BUG SCRIPT RUN.PY...')
+
+def main():
+    set_cloud_profiler()
+    litter_bug = ['python3', config.BASE_PATH + 'main.py']
+
     while True:
         try:
             logger.info('LAUNCHING NEW LITTER BUG...')
@@ -19,3 +18,21 @@ if __name__ == '__main__':
         except subprocess.CalledProcessError as e:
             logger.error('Error has occurred in run.py')
             logger.error(e)
+
+
+def set_cloud_profiler():
+    logger.info("Setting cloud profiler...")
+    try:
+        googlecloudprofiler.start(
+            service='plb-profiler',
+            service_version='1.0.1',
+            verbose=3,
+        )
+    except (ValueError, NotImplementedError) as exc:
+        print(exc)  # Handle errors here
+
+
+if __name__ == '__main__':
+    logger.info('BEGINNING OF LITTER BUG SCRIPT RUN.PY...')
+    main()
+
