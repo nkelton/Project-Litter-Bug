@@ -1,3 +1,4 @@
+import glob
 import os
 import random
 import time
@@ -18,6 +19,13 @@ def clear_folder(folder):
                 os.unlink(file_path)
         except Exception as e:
             print(e)
+
+
+def clear_mp3_files():
+    logger.info('Learning mp3 files: ' + config.BASE_PATH)
+    file_lst = glob.glob(os.path.join(config.BASE_PATH, "*.mp3"))
+    for f in file_lst:
+        os.remove(f)
 
 
 def clear_file(path):
