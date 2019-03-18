@@ -22,7 +22,7 @@ def clear_folder(folder):
 
 
 def clear_mp3_files():
-    logger.info('Learning mp3 files: ' + config.BASE_PATH)
+    logger.info('Clearning mp3 files: ' + config.BASE_PATH)
     file_lst = glob.glob(os.path.join(config.BASE_PATH, "*.mp3"))
     for f in file_lst:
         os.remove(f)
