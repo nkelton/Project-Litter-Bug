@@ -86,6 +86,7 @@ class LitterBug(object):
         utils.clear_folder(config.SFX_PATH)
         utils.clear_file(self.result_path)
         utils.clear_mp3_files()
+        utils.clear_content_from_db(self.id)
         time.sleep(5)
 
     def exception_handler(self):

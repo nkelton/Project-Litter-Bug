@@ -28,6 +28,11 @@ def clear_mp3_files():
         os.remove(f)
 
 
+def clear_content_from_db(litter_id):
+    logger.info('Clearing unused content from database...')
+    requests.delete(config.BASE_URL + '/content/' + litter_id + '/')
+
+
 def clear_file(path):
     logger.info('Clearing file: ' + path)
     if os.path.exists(path):
