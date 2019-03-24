@@ -11,4 +11,4 @@ oauth2client
 progressbar2
 git+https://github.com/nkelton/youtube-upload.git
 git+https://github.com/nkelton/runp.git
-google-cloud-profiler
+
