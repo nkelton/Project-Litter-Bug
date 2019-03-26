@@ -41,7 +41,7 @@ def clear_file(path):
 
 def update_script(task):
     url = config.BASE_URL + '/script/1/'
-    requests.patch(url, json=task)
+    requests.patch(url, json=task, auth=config.AUTH)
 
 
 def generate_keyword():
@@ -55,7 +55,7 @@ def generate_keyword():
 
 def get_current_download_value():
     url = config.BASE_URL + '/script/1/'
-    response = requests.get(url)
+    response = requests.get(url, config.AUTH)
     script_data = response.json()
     return script_data['download']
 
