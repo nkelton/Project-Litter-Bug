@@ -95,7 +95,7 @@ class ContentUploader(object):
 
     def retrieve_content_lst(self):
         url = self._url('/content/' + str(self.id) + '/')
-        response = requests.get(url)
+        response = requests.get(url, auth=config.AUTH)
         if response.status_code == 200:
             temp = response.json()
             vid_str = self.create_content_str(temp, 'vid')
@@ -125,12 +125,13 @@ class ContentUploader(object):
     def store(self):
         logger.info('Storing data...')
         url = self._url('/litter/')
-        requests.post(url, json={
+        task = {
             'litter_id': self.id,
             'title': self.name[:-4],
             'url': self.url,
             'weight': self.weight,
-        })
+        }
+        requests.post(url, json=task, auth=config.AUTH)
 
     def create_thumbnail(self):
         logger.info('Creating thumbnail...')
