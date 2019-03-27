@@ -86,7 +86,6 @@ class LitterBug(object):
         utils.clear_folder(config.SFX_PATH)
         utils.clear_file(self.result_path)
         utils.clear_mp3_files()
-        utils.clear_content_from_db(self.id)
         time.sleep(5)
 
     def exception_handler(self):
@@ -95,6 +94,7 @@ class LitterBug(object):
         config.GLOBAL_DOWNLOAD_TRACKER = 100
         task = {'download': config.GLOBAL_DOWNLOAD_TRACKER }
         utils.update_script(task)
+        utils.clear_content_from_db(self.id)
         time.sleep(5)
 
     def retrieve_tags(self):
