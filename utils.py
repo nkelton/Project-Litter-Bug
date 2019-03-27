@@ -55,7 +55,7 @@ def generate_keyword():
 
 def get_current_download_value():
     url = config.BASE_URL + '/script/1/'
-    response = requests.get(url, config.AUTH)
+    response = requests.get(url, auth=config.AUTH)
     script_data = response.json()
     return script_data['download']
 
