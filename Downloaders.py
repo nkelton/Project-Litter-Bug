@@ -22,11 +22,12 @@ logger = config.set_logger('Downloaders.py')
 def store(litter_id, url, type):
     logger.info('Storing media...')
     end_point = config.BASE_URL + '/content/'
-    response = requests.post(end_point, json={
+    task = {
         'litter_id': litter_id,
         'url': url,
         'type': type,
-    })
+    }
+    response = requests.post(end_point, json=task, auth=config.AUTH)
 
 
 def downloader(url, download_path):
