@@ -27,7 +27,7 @@ def store(litter_id, url, type):
         'url': url,
         'type': type,
     }
-    response = requests.post(end_point, json=task, auth=config.AUTH)
+    return requests.post(end_point, json=task, auth=config.AUTH)
 
 
 def downloader(url, download_path):
@@ -41,9 +41,7 @@ def downloader(url, download_path):
     progress = 0
 
     with open(download_path, 'wb') as f:
-        logger.info('Inside downloader with statement...')
         for data in tqdm(r.iter_content(block_size), total=total_bytes, unit='B'):
-            logger.info('Inside downloader for loop...')
             f.write(data)
             progress += 1
             percent_downloaded = round((progress / total_bytes) * 100)
@@ -55,9 +53,6 @@ def downloader(url, download_path):
                 task = {'download': config.GLOBAL_DOWNLOAD_TRACKER}
                 utils.update_script(task)
                 time.sleep(.1)
-            else:
-                logger.info('GLOBAL_DOWNLOAD_TRACKER is equal to current download value..')
-
     f.close()
 
 

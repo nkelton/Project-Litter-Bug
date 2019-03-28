@@ -30,7 +30,7 @@ def clear_mp3_files():
 
 def clear_content_from_db(litter_id):
     logger.info('Clearing unused content from database...')
-    requests.delete(config.BASE_URL + '/content/' + litter_id + '/', auth=config.AUTH)
+    return requests.delete(config.BASE_URL + '/content/' + litter_id + '/', auth=config.AUTH)
 
 
 def clear_file(path):
@@ -41,7 +41,7 @@ def clear_file(path):
 
 def update_script(task):
     url = config.BASE_URL + '/script/1/'
-    requests.patch(url, json=task, auth=config.AUTH)
+    return requests.patch(url, json=task, auth=config.AUTH)
 
 
 def generate_keyword():
