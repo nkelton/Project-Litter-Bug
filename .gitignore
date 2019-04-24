@@ -3,6 +3,9 @@ media
 plb-env
 secret
 
+#logging
+plb.log
+
 # IDE
 .idea
 
