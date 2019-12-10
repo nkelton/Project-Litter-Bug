@@ -1,8 +1,6 @@
 # Project-Litter-Bug
 Script to randomly generate content
 
-Visit [here](https://web.archive.org/web/20191021164416/http://projectlitterbug.com/) for more information.
-
 Visit [here](https://www.youtube.com/channel/UChAlnk3z4GbtQ_rFxgpu4Bw) for more videos.
 
 ![](https://media.giphy.com/media/dsX6xSNT82kt3oGrOy/giphy.gif)
